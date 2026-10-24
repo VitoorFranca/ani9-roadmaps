@@ -14,6 +14,7 @@ servem fora do app: são JSON simples e legíveis.
 | Roadmap | Tema | Nível | Arquivo |
 |---|---|---|---|
 | Back-end com Go | Tecnologia | Do básico ao avançado | [`models/back-end-go.json`](models/back-end-go.json) |
+| Claude Certified Architect – Foundations (CCAR-F) | Tecnologia | Do básico ao avançado | [`models/claude-certified-architect-foundations.json`](models/claude-certified-architect-foundations.json) |
 
 O catálogo é para **qualquer área do conhecimento**, não para um nicho. Os
 temas vão de exatas, ciências da natureza, saúde e humanidades a línguas,
