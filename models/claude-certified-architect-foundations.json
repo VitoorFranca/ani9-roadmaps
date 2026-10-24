@@ -1,0 +1,258 @@
+{
+  "format": "ani9-roadmap",
+  "version": 1,
+  "title": "Claude Certified Architect – Foundations (CCAR-F)",
+  "summary": "Preparação para o exame CCAR-F da Anthropic, do básico da Claude API a sistemas multiagente, seguindo os 5 domínios do guia oficial (v1.0, jul/2026): arquitetura agêntica, ferramentas e MCP, Claude Code, prompts e saída estruturada, contexto e confiabilidade.",
+  "area": "tecnologia",
+  "level": "completo",
+  "topics": [
+    {
+      "title": "Claude API: mensagens e o ciclo de uma requisição",
+      "summary": "A base de tudo: como uma conversa é enviada à Messages API e como ler a resposta. Você domina quando monta uma conversa de vários turnos reenviando o histórico completo e explica cada valor de stop_reason que recebe.",
+      "resources": [
+        { "kind": "teoria", "title": "Claude Docs: Working with the Messages API", "url": "https://platform.claude.com/docs/en/build-with-claude/working-with-messages" },
+        { "kind": "teoria", "title": "Claude Docs: Handling stop reasons", "url": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons" },
+        { "kind": "pratica", "title": "Anthropic Courses: API fundamentals", "url": "https://github.com/anthropics/courses/tree/master/anthropic_api_fundamentals" },
+        { "kind": "pratica", "title": "Anthropic Academy: Building with the Claude API", "url": "https://anthropic.skilljar.com/claude-with-the-anthropic-api" }
+      ],
+      "subtopics": [
+        { "title": "System prompt e papéis", "summary": "O que vai no system prompt e o que vai nas mensagens de user e assistant." },
+        { "title": "API sem estado", "summary": "Por que o histórico completo precisa ir em cada requisição para manter a coerência." },
+        { "title": "max_tokens e stop_reason", "summary": "end_turn, tool_use, max_tokens e o que fazer em cada caso." },
+        { "title": "Escolha de modelo", "summary": "Trocas entre capacidade, latência e custo ao escolher o modelo para cada etapa." }
+      ]
+    },
+    {
+      "title": "Engenharia de prompt: critérios explícitos e exemplos",
+      "summary": "Escrever prompts que produzem resultados precisos e consistentes. Você domina quando troca instruções vagas (\"seja conservador\") por critérios explícitos e escreve 2 a 4 exemplos que mostram como decidir casos ambíguos.",
+      "resources": [
+        { "kind": "teoria", "title": "Claude Docs: Prompting best practices", "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices" },
+        { "kind": "pratica", "title": "Anthropic: Prompt engineering interactive tutorial", "url": "https://github.com/anthropics/prompt-eng-interactive-tutorial" },
+        { "kind": "pratica", "title": "Anthropic Courses: Real world prompting", "url": "https://github.com/anthropics/courses/tree/master/real_world_prompting" }
+      ],
+      "subtopics": [
+        { "title": "Critérios explícitos", "summary": "Dizer o que reportar e o que ignorar, em vez de pedir \"só o que tiver alta confiança\"." },
+        { "title": "Few-shot", "summary": "Exemplos que mostram o formato e o raciocínio em casos ambíguos, para generalizar." },
+        { "title": "Falsos positivos", "summary": "Por que categorias com muito falso positivo derrubam a confiança nas outras." },
+        { "title": "Refinamento iterativo", "summary": "Exemplos de entrada e saída, testes primeiro e o padrão de entrevista." }
+      ]
+    },
+    {
+      "title": "Uso de ferramentas (tool use)",
+      "summary": "Como o Claude chama funções do seu sistema: você define ferramentas com JSON Schema, ele pede a chamada e você devolve o resultado. Você domina quando implementa o ciclo tool_use → tool_result e escolhe o tool_choice certo para cada situação.",
+      "resources": [
+        { "kind": "teoria", "title": "Claude Docs: Tool use overview", "url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview" },
+        { "kind": "teoria", "title": "Claude Docs: Define tools", "url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools" },
+        { "kind": "pratica", "title": "Anthropic Courses: Tool use", "url": "https://github.com/anthropics/courses/tree/master/tool_use" },
+        { "kind": "pratica", "title": "Claude Cookbooks: tool_choice", "url": "https://github.com/anthropics/claude-cookbooks/blob/main/tool_use/tool_choice.ipynb" }
+      ],
+      "subtopics": [
+        { "title": "Definição de ferramentas", "summary": "Nome, descrição e input_schema em JSON Schema." },
+        { "title": "tool_use e tool_result", "summary": "Executar a ferramenta pedida e devolver o resultado na mensagem seguinte." },
+        { "title": "tool_choice", "summary": "auto (pode responder em texto), any (precisa chamar alguma) e ferramenta forçada." },
+        { "title": "Chamadas em paralelo", "summary": "Várias ferramentas pedidas numa só resposta e como devolver todos os resultados." }
+      ]
+    },
+    {
+      "title": "Saída estruturada com JSON Schema",
+      "summary": "Extrair dados de documentos em formato garantido, usando ferramentas com schema. Você domina quando desenha um schema com campos opcionais e enums extensíveis e explica por que ele elimina erros de sintaxe, mas não erros de significado.",
+      "resources": [
+        { "kind": "teoria", "title": "Claude Docs: Structured outputs", "url": "https://platform.claude.com/docs/en/build-with-claude/structured-outputs" },
+        { "kind": "teoria", "title": "Claude Docs: Strict tool use", "url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/strict-tool-use" },
+        { "kind": "pratica", "title": "Claude Cookbooks: Extracting structured JSON", "url": "https://github.com/anthropics/claude-cookbooks/blob/main/tool_use/extracting_structured_json.ipynb" },
+        { "kind": "pratica", "title": "Claude Cookbooks: Tool use with Pydantic", "url": "https://github.com/anthropics/claude-cookbooks/blob/main/tool_use/tool_use_with_pydantic.ipynb" }
+      ],
+      "subtopics": [
+        { "title": "Campos obrigatórios e anuláveis", "summary": "Campo nullable quando o documento pode não trazer a informação, para o modelo não inventar." },
+        { "title": "Enums extensíveis", "summary": "Valores como \"unclear\" e o par \"other\" + campo de detalhe." },
+        { "title": "Erro de sintaxe x erro semântico", "summary": "O schema garante o formato; somas que não fecham e campos trocados continuam possíveis." },
+        { "title": "Regras de normalização", "summary": "Instruções de formato no prompt junto com o schema, para fontes inconsistentes." }
+      ]
+    },
+    {
+      "title": "Validação, retentativa e processamento em lote",
+      "summary": "Garantir a qualidade da extração em volume. Você domina quando implementa um ciclo de validação com retentativa guiada pelo erro, sabe quando a retentativa não vai resolver e decide entre API síncrona e Message Batches API pelo prazo de cada fluxo.",
+      "resources": [
+        { "kind": "teoria", "title": "Claude Docs: Batch processing", "url": "https://platform.claude.com/docs/en/build-with-claude/batch-processing" },
+        { "kind": "teoria", "title": "Pydantic: Models", "url": "https://pydantic.dev/docs/validation/latest/concepts/models/" },
+        { "kind": "pratica", "title": "Claude Cookbooks: Batch processing", "url": "https://github.com/anthropics/claude-cookbooks/blob/main/misc/batch_processing.ipynb" }
+      ],
+      "subtopics": [
+        { "title": "Retentativa com o erro", "summary": "Reenviar documento, extração falha e o erro de validação específico." },
+        { "title": "Limites da retentativa", "summary": "Não adianta repetir quando a informação simplesmente não está na fonte." },
+        { "title": "Message Batches API", "summary": "Custo menor, janela de até 24 h, sem SLA de latência e sem ferramentas em vários turnos." },
+        { "title": "custom_id e falhas", "summary": "Correlacionar pedidos e respostas e reenviar só os que falharam." },
+        { "title": "Prazos e frequência de envio", "summary": "Calcular a cadência de lotes para cumprir o SLA do negócio." }
+      ]
+    },
+    {
+      "title": "Projeto de ferramentas para agentes",
+      "summary": "Ferramentas que o modelo escolhe e usa sem se confundir. Você domina quando reescreve descrições que causam escolhas erradas, divide uma ferramenta genérica em ferramentas com contrato claro e devolve erros que dizem ao agente se vale tentar de novo.",
+      "resources": [
+        { "kind": "teoria", "title": "Anthropic: Writing effective tools for agents", "url": "https://www.anthropic.com/research/writing-tools-for-agents" },
+        { "kind": "pratica", "title": "Claude Cookbooks: Customer service agent", "url": "https://github.com/anthropics/claude-cookbooks/blob/main/tool_use/customer_service_agent.ipynb" }
+      ],
+      "subtopics": [
+        { "title": "Descrições que diferenciam", "summary": "Formato de entrada, exemplos de pedidos, casos-limite e quando usar uma em vez de outra." },
+        { "title": "Dividir e renomear", "summary": "Acabar com sobreposição entre ferramentas parecidas." },
+        { "title": "Erros estruturados", "summary": "Categoria (transitório, validação, permissão, regra de negócio) e se é possível tentar de novo." },
+        { "title": "Falha x resultado vazio", "summary": "Uma busca que falhou não é o mesmo que uma busca sem resultados." },
+        { "title": "Poucas ferramentas por agente", "summary": "Muitas opções pioram a escolha; cada agente recebe só as do seu papel." }
+      ]
+    },
+    {
+      "title": "Model Context Protocol (MCP)",
+      "summary": "O protocolo aberto que liga agentes a sistemas externos por servidores com ferramentas e recursos. Você domina quando cria um servidor MCP, sinaliza falhas com isError e configura servidores no escopo certo, sem expor credenciais.",
+      "resources": [
+        { "kind": "teoria", "title": "MCP: Introdução", "url": "https://modelcontextprotocol.io/docs/getting-started/intro" },
+        { "kind": "teoria", "title": "MCP: Especificação de ferramentas", "url": "https://modelcontextprotocol.io/specification/latest/server/tools" },
+        { "kind": "pratica", "title": "MCP: Build an MCP server", "url": "https://modelcontextprotocol.io/docs/develop/build-server" },
+        { "kind": "pratica", "title": "Anthropic Academy: Introduction to Model Context Protocol", "url": "https://anthropic.skilljar.com/introduction-to-model-context-protocol" }
+      ],
+      "subtopics": [
+        { "title": "Ferramentas e recursos", "summary": "Ferramentas para ações; recursos para expor catálogos de conteúdo e evitar buscas exploratórias." },
+        { "title": "isError", "summary": "Como um servidor comunica ao agente que a ferramenta falhou." },
+        { "title": "Escopos de configuração", "summary": ".mcp.json do projeto para o time; ~/.claude.json para servidores pessoais." },
+        { "title": "Credenciais por variável de ambiente", "summary": "Expansão de ${VARIAVEL} no .mcp.json, sem segredos no repositório." },
+        { "title": "Servidores prontos x próprios", "summary": "Usar servidores da comunidade para integrações comuns e criar os próprios só para fluxos do time." }
+      ]
+    },
+    {
+      "title": "Claude Code: memória e regras do projeto",
+      "summary": "Como o Claude Code recebe as convenções de cada projeto. Você domina quando organiza instruções entre usuário, projeto e diretório, divide um CLAUDE.md grande em regras por caminho e descobre, com /memory, por que alguém do time não recebe uma instrução.",
+      "resources": [
+        { "kind": "teoria", "title": "Claude Code Docs: How Claude remembers your project", "url": "https://code.claude.com/docs/en/memory" },
+        { "kind": "teoria", "title": "Claude Code Docs: Settings", "url": "https://code.claude.com/docs/en/settings" },
+        { "kind": "pratica", "title": "Anthropic Academy: Claude Code in Action", "url": "https://anthropic.skilljar.com/claude-code-in-action" }
+      ],
+      "subtopics": [
+        { "title": "Hierarquia do CLAUDE.md", "summary": "~/.claude/CLAUDE.md (só seu), CLAUDE.md do projeto (do time) e de subdiretórios." },
+        { "title": "@import", "summary": "Incluir arquivos de padrões específicos em cada pacote." },
+        { "title": "Regras por caminho", "summary": "Arquivos em .claude/rules/ com paths em glob, carregados só ao editar arquivos que casam." },
+        { "title": "/memory", "summary": "Ver quais arquivos de memória estão carregados na sessão." }
+      ]
+    },
+    {
+      "title": "Claude Code: comandos, skills e modos de trabalho",
+      "summary": "Personalizar o Claude Code para o time e escolher como trabalhar em cada tarefa. Você domina quando cria comandos e skills no escopo certo, isola saídas longas com context: fork e decide entre plan mode e execução direta pelo tamanho e risco da mudança.",
+      "resources": [
+        { "kind": "teoria", "title": "Claude Code Docs: Skills", "url": "https://code.claude.com/docs/en/skills" },
+        { "kind": "teoria", "title": "Claude Code Docs: Best practices", "url": "https://code.claude.com/docs/en/best-practices" },
+        { "kind": "pratica", "title": "Anthropic Academy: Introduction to agent skills", "url": "https://anthropic.skilljar.com/introduction-to-agent-skills" }
+      ],
+      "subtopics": [
+        { "title": "Comandos do projeto x pessoais", "summary": ".claude/commands/ versionado para o time; ~/.claude/commands/ só para você." },
+        { "title": "Frontmatter de skills", "summary": "context: fork, allowed-tools e argument-hint no SKILL.md." },
+        { "title": "Skill x CLAUDE.md", "summary": "Skill para fluxos sob demanda; CLAUDE.md para padrões sempre carregados." },
+        { "title": "Plan mode x execução direta", "summary": "Planejar mudanças grandes e arquiteturais; executar direto mudanças pequenas e claras." },
+        { "title": "Subagente Explore", "summary": "Isolar a descoberta verbosa e trazer só o resumo para a conversa principal." },
+        { "title": "Ferramentas embutidas", "summary": "Grep para conteúdo, Glob para nomes de arquivo, Read/Write/Edit e quando Edit falha." }
+      ]
+    },
+    {
+      "title": "Claude Code em CI/CD e revisão de código",
+      "summary": "Rodar o Claude Code sem interação em pipelines, para revisar pull requests e gerar testes. Você domina quando configura uma revisão automática com saída em JSON validada por schema, sem comentários repetidos e com poucos falsos positivos.",
+      "resources": [
+        { "kind": "teoria", "title": "Claude Code Docs: Run Claude Code programmatically", "url": "https://code.claude.com/docs/en/headless" },
+        { "kind": "teoria", "title": "Claude Code Docs: GitHub Actions", "url": "https://code.claude.com/docs/en/github-actions" },
+        { "kind": "pratica", "title": "Anthropic: claude-code-action", "url": "https://github.com/anthropics/claude-code-action" }
+      ],
+      "subtopics": [
+        { "title": "Modo não interativo", "summary": "-p, --output-format json e --json-schema para saída que o pipeline consegue ler." },
+        { "title": "CLAUDE.md como contexto do CI", "summary": "Padrões de teste, fixtures e critérios de revisão documentados para o modo automático." },
+        { "title": "Revisão independente", "summary": "Uma instância sem o raciocínio da geração encontra mais problemas que a autorrevisão." },
+        { "title": "Revisão em várias passadas", "summary": "Uma passada por arquivo mais uma de integração entre arquivos." },
+        { "title": "Sem comentários repetidos", "summary": "Passar achados anteriores e pedir só o que é novo ou continua pendente." }
+      ]
+    },
+    {
+      "title": "O loop agêntico e o Claude Agent SDK",
+      "summary": "O ciclo em que o modelo decide, chama ferramentas e continua até terminar, e o SDK que o implementa. Você domina quando controla o loop pelo stop_reason, usa hooks para garantir regras de negócio e retoma ou bifurca sessões conforme o contexto continua válido ou não.",
+      "resources": [
+        { "kind": "teoria", "title": "Claude Code Docs: Agent SDK, the agent loop", "url": "https://code.claude.com/docs/en/agent-sdk/agent-loop" },
+        { "kind": "teoria", "title": "Claude Code Docs: Agent SDK hooks", "url": "https://code.claude.com/docs/en/agent-sdk/hooks" },
+        { "kind": "pratica", "title": "Claude Code Docs: Agent SDK quickstart", "url": "https://code.claude.com/docs/en/agent-sdk/quickstart" },
+        { "kind": "pratica", "title": "Claude Cookbooks: Claude Agent SDK", "url": "https://github.com/anthropics/claude-cookbooks/tree/main/claude_agent_sdk" }
+      ],
+      "subtopics": [
+        { "title": "Controle pelo stop_reason", "summary": "Continuar em tool_use, encerrar em end_turn, com o resultado de cada ferramenta no histórico." },
+        { "title": "Anti-padrões de parada", "summary": "Ler frases do modelo, limite fixo de iterações ou texto do assistente como sinal de fim." },
+        { "title": "Hooks", "summary": "PostToolUse para normalizar dados e interceptação de chamadas para bloquear o que viola regras." },
+        { "title": "Hook x instrução no prompt", "summary": "Garantia determinística quando a regra não pode falhar; prompt quando basta probabilidade." },
+        { "title": "Sessões", "summary": "--resume com nome, fork_session e quando recomeçar com um resumo em vez de retomar." }
+      ]
+    },
+    {
+      "title": "Orquestração multiagente",
+      "summary": "Sistemas em que um coordenador divide o trabalho entre subagentes especializados. Você domina quando projeta um coordenador que escolhe quais subagentes chamar, passa a cada um o contexto completo de que precisa e roda tarefas independentes em paralelo.",
+      "resources": [
+        { "kind": "teoria", "title": "Anthropic: Building effective agents", "url": "https://www.anthropic.com/research/building-effective-agents" },
+        { "kind": "teoria", "title": "Anthropic: How we built our multi-agent research system", "url": "https://www.anthropic.com/research/multi-agent-research-system" },
+        { "kind": "pratica", "title": "Claude Cookbooks: Orchestrator-workers", "url": "https://github.com/anthropics/claude-cookbooks/blob/main/patterns/agents/orchestrator_workers.ipynb" },
+        { "kind": "pratica", "title": "Anthropic Academy: Introduction to subagents", "url": "https://anthropic.skilljar.com/introduction-to-subagents" }
+      ],
+      "subtopics": [
+        { "title": "Coordenador e subagentes", "summary": "Toda comunicação passa pelo coordenador, para observar e tratar erros num só lugar." },
+        { "title": "Contexto explícito", "summary": "Subagentes não herdam a conversa: o prompt de cada um leva tudo o que ele precisa." },
+        { "title": "Task e AgentDefinition", "summary": "allowedTools com Task, descrição, prompt e ferramentas de cada tipo de subagente." },
+        { "title": "Subagentes em paralelo", "summary": "Várias chamadas de Task numa só resposta do coordenador." },
+        { "title": "Encadeamento x decomposição dinâmica", "summary": "Passos fixos para revisões previsíveis; plano adaptativo para investigações abertas." },
+        { "title": "Passagem para humanos", "summary": "Resumo estruturado (cliente, causa, valor, ação recomendada) para quem não viu a conversa." }
+      ]
+    },
+    {
+      "title": "Gerenciamento de contexto em sessões longas",
+      "summary": "Manter as informações importantes vivas quando a janela de contexto enche. Você domina quando guarda os fatos do caso fora do histórico resumido, corta saídas de ferramentas ao que importa e usa subagentes e arquivos de anotações para explorar bases grandes sem perder o fio.",
+      "resources": [
+        { "kind": "teoria", "title": "Anthropic: Effective context engineering for AI agents", "url": "https://www.anthropic.com/research/effective-context-engineering-for-ai-agents" },
+        { "kind": "teoria", "title": "Claude Docs: Context windows", "url": "https://platform.claude.com/docs/en/build-with-claude/context-windows" },
+        { "kind": "pratica", "title": "Claude Cookbooks: Context engineering tools", "url": "https://github.com/anthropics/claude-cookbooks/blob/main/tool_use/context_engineering/context_engineering_tools.ipynb" }
+      ],
+      "subtopics": [
+        { "title": "Bloco de fatos do caso", "summary": "Valores, datas, números de pedido e status num bloco fixo, fora do resumo." },
+        { "title": "Perdido no meio", "summary": "Pôr o resumo dos achados no início e organizar o resto com seções." },
+        { "title": "Cortar saídas de ferramentas", "summary": "Manter só os campos relevantes antes que se acumulem no contexto." },
+        { "title": "Anotações e /compact", "summary": "Arquivos de rascunho com os achados-chave e compactação em explorações longas." },
+        { "title": "Retomada após falha", "summary": "Cada agente exporta seu estado; o coordenador carrega um manifesto ao retomar." }
+      ]
+    },
+    {
+      "title": "Confiabilidade: escalonamento, revisão humana e procedência",
+      "summary": "Decidir quando o agente resolve sozinho, quando passa para uma pessoa e como manter cada afirmação ligada à sua fonte. Você domina quando define critérios de escalonamento com exemplos, mede a precisão por tipo de documento e preserva fontes e conflitos até o relatório final.",
+      "resources": [
+        { "kind": "teoria", "title": "Claude Docs: Reduce hallucinations", "url": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations" },
+        { "kind": "teoria", "title": "Claude Docs: Create strong empirical evaluations", "url": "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests" },
+        { "kind": "pratica", "title": "Anthropic Courses: Prompt evaluations", "url": "https://github.com/anthropics/courses/tree/master/prompt_evaluations" },
+        { "kind": "pratica", "title": "Claude Cookbooks: Building evals", "url": "https://github.com/anthropics/claude-cookbooks/blob/main/misc/building_evals.ipynb" }
+      ],
+      "subtopics": [
+        { "title": "Gatilhos de escalonamento", "summary": "Pedido explícito por humano, lacuna na política e falta de progresso; não sentimento nem autoconfiança." },
+        { "title": "Ambiguidade", "summary": "Pedir mais um identificador quando a busca retorna várias pessoas, em vez de adivinhar." },
+        { "title": "Propagação de erros entre agentes", "summary": "Recuperação local do que é transitório e erro estruturado com resultados parciais para o coordenador." },
+        { "title": "Revisão humana calibrada", "summary": "Confiança por campo, amostragem estratificada e precisão por tipo de documento." },
+        { "title": "Procedência das afirmações", "summary": "Mapear cada afirmação à fonte, anotar conflitos e exigir datas." }
+      ]
+    },
+    {
+      "title": "Projeto integrador e simulado",
+      "summary": "Juntar os cinco domínios em sistemas reais, como os cenários do exame: agente de suporte, pesquisa multiagente, extração de dados e revisão no CI. Você domina quando resolve os quatro exercícios do guia oficial e justifica cada resposta das questões de exemplo.",
+      "resources": [
+        { "kind": "teoria", "title": "Anthropic: página do exame CCAR-F", "url": "https://anthropic-partners.skilljar.com/claude-certified-architect-foundations-certification" },
+        { "kind": "pratica", "title": "Anthropic: Exam Guide CCAR-F (exercícios e questões de exemplo)", "url": "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542750%2FClaude+Certified+Architect+%E2%80%93+Foundations+Exam+Guide.pdf" }
+      ],
+      "subtopics": [
+        { "title": "Agente com escalonamento", "summary": "Ferramentas MCP, loop por stop_reason, erros estruturados e hook de regra de negócio." },
+        { "title": "Claude Code para o time", "summary": "CLAUDE.md, regras por caminho, skill com context: fork e dois servidores MCP." },
+        { "title": "Pipeline de extração", "summary": "Schema com campos anuláveis, validação com retentativa, lote e revisão humana." },
+        { "title": "Pesquisa multiagente", "summary": "Coordenador, subagentes em paralelo, erros com resultados parciais e fontes preservadas." },
+        { "title": "Formato do exame", "summary": "60 questões em 120 minutos, 4 de 6 cenários, aprovação com 720 de 1.000." }
+      ]
+    }
+  ],
+  "links": [
+    { "from": "Few-shot", "to": "Gatilhos de escalonamento" },
+    { "from": "Erros estruturados", "to": "Propagação de erros entre agentes" },
+    { "from": "Revisão em várias passadas", "to": "Orquestração multiagente" },
+    { "from": "Subagente Explore", "to": "Anotações e /compact" }
+  ]
+}
