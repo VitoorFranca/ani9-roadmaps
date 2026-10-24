@@ -1,0 +1,56 @@
+name: Sugerir roadmap
+description: Propor um roadmap novo para o catálogo
+labels: ["sugestão"]
+body:
+  - type: input
+    id: tema
+    attributes:
+      label: Assunto
+      description: O que o roadmap ensina.
+      placeholder: Ex.: Anatomia humana, Espanhol, Direito constitucional, Cálculo
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Tema
+      options:
+        - Exatas e matemática
+        - Ciências da natureza
+        - Saúde
+        - Humanidades
+        - Línguas e comunicação
+        - Direito
+        - Negócios e finanças
+        - Tecnologia
+        - Engenharia
+        - Artes e design
+        - Educação
+        - Concursos e vestibulares
+        - Outros
+    validations:
+      required: true
+  - type: dropdown
+    id: level
+    attributes:
+      label: Nível
+      options:
+        - Iniciante
+        - Intermediário
+        - Avançado
+        - Do básico ao avançado
+    validations:
+      required: true
+  - type: textarea
+    id: escopo
+    attributes:
+      label: Para quem é e aonde leva
+      description: Público, ponto de partida e o que a pessoa deve conseguir fazer no fim.
+    validations:
+      required: true
+  - type: checkboxes
+    id: autoria
+    attributes:
+      label: Autoria
+      options:
+        - label: Quero escrever este roadmap e enviar um pull request.

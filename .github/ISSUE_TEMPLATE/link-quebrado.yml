@@ -1,0 +1,24 @@
+name: Link quebrado ou fonte ruim
+description: Avisar de um link que não abre, mudou ou não ajuda
+labels: ["link quebrado"]
+body:
+  - type: input
+    id: arquivo
+    attributes:
+      label: Roadmap
+      placeholder: Ex.: models/back-end-go.json
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Link
+    validations:
+      required: true
+  - type: textarea
+    id: problema
+    attributes:
+      label: O que está errado
+      description: Não abre, mudou de endereço, ficou pago, não trata do tópico… Se souber de uma fonte melhor, indique.
+    validations:
+      required: true

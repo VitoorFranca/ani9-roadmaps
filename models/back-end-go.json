@@ -1,0 +1,243 @@
+{
+  "format": "ani9-roadmap",
+  "version": 1,
+  "title": "Back-end com Go",
+  "summary": "Do primeiro programa em Go a serviços de produção: APIs HTTP e gRPC, banco de dados, concorrência, testes, segurança, observabilidade, desempenho e deploy.",
+  "area": "tecnologia",
+  "level": "completo",
+  "topics": [
+    {
+      "title": "Fundamentos da linguagem Go",
+      "summary": "Sintaxe, tipos, funções e as estruturas de dados da linguagem. Você domina quando escreve, sem consultar, um programa que lê dados, os organiza em structs, slices e maps e trata cada erro.",
+      "resources": [
+        { "kind": "teoria", "title": "Go: Effective Go", "url": "https://go.dev/doc/effective_go" },
+        { "kind": "teoria", "title": "Go by Example", "url": "https://gobyexample.com/" },
+        { "kind": "pratica", "title": "Go: A Tour of Go", "url": "https://go.dev/tour/" },
+        { "kind": "pratica", "title": "Exercism: trilha de Go", "url": "https://exercism.org/tracks/go" }
+      ],
+      "subtopics": [
+        { "title": "Tipos, variáveis e constantes", "summary": "Tipos básicos, valor zero, conversões, iota e declaração curta (:=)." },
+        { "title": "Controle de fluxo e funções", "summary": "if, for, switch, múltiplos retornos, funções como valores, closures e defer." },
+        { "title": "Slices, arrays e maps", "summary": "Capacidade e append, fatias que compartilham o mesmo array e iteração com range." },
+        { "title": "Structs, métodos e ponteiros", "summary": "Receptor por valor ou por ponteiro, embedding e quando passar ponteiros." },
+        { "title": "Strings, bytes e runes", "summary": "UTF-8, a diferença entre byte e rune e os pacotes strings, strconv e bytes." }
+      ]
+    },
+    {
+      "title": "Interfaces, erros e genéricos",
+      "summary": "As ferramentas de abstração do Go: interfaces implícitas, erros como valores e tipos parametrizados. Você domina quando define interfaces pequenas no lado de quem usa, envolve e inspeciona erros e escreve uma função genérica com restrições.",
+      "resources": [
+        { "kind": "teoria", "title": "Go Blog: Working with Errors in Go 1.13", "url": "https://go.dev/blog/go1.13-errors" },
+        { "kind": "teoria", "title": "Go Blog: An Introduction To Generics", "url": "https://go.dev/blog/intro-generics" },
+        { "kind": "pratica", "title": "Go: Tutorial de genéricos", "url": "https://go.dev/doc/tutorial/generics" }
+      ],
+      "subtopics": [
+        { "title": "Interfaces", "summary": "Satisfação implícita, interfaces pequenas (io.Reader, io.Writer), type assertion e type switch." },
+        { "title": "Tratamento de erros", "summary": "errors.Is, errors.As, envolver erros com %w, erros sentinela e tipos de erro próprios." },
+        { "title": "panic e recover", "summary": "Para o que realmente é excepcional, e por que não substituem o retorno de erro." },
+        { "title": "Genéricos", "summary": "Parâmetros de tipo, restrições como comparable e cmp.Ordered, e quando uma interface comum basta." }
+      ]
+    },
+    {
+      "title": "Módulos, pacotes e ferramentas",
+      "summary": "Como um projeto Go é organizado e construído: módulos, pacotes, dependências e as ferramentas do go. Você domina quando cria um módulo, separa pacotes com internal/, atualiza uma dependência com segurança e usa go vet e gofmt no dia a dia.",
+      "resources": [
+        { "kind": "teoria", "title": "Go: Organizing a Go module", "url": "https://go.dev/doc/modules/layout" },
+        { "kind": "teoria", "title": "Go: Managing dependencies", "url": "https://go.dev/doc/modules/managing-dependencies" },
+        { "kind": "pratica", "title": "Go: Tutorial Create a module", "url": "https://go.dev/doc/tutorial/create-module" },
+        { "kind": "pratica", "title": "Go: Tutorial de workspaces com vários módulos", "url": "https://go.dev/doc/tutorial/workspaces" }
+      ],
+      "subtopics": [
+        { "title": "go.mod e go.sum", "summary": "Versionamento semântico, go get, go mod tidy e a diretiva toolchain." },
+        { "title": "Pacotes e visibilidade", "summary": "Nomes exportados, o diretório internal/ e como escolher nomes de pacote." },
+        { "title": "gofmt, go vet e linters", "summary": "Formatação padrão, análise estática e golangci-lint em CI." },
+        { "title": "Build e compilação cruzada", "summary": "go build, GOOS/GOARCH, build tags e binários estáticos." }
+      ]
+    },
+    {
+      "title": "Testes",
+      "summary": "O pacote testing e a cultura de testes do Go. Você domina quando escreve testes de tabela, isola dependências por interface, testa um handler HTTP sem subir servidor e usa benchmarks e fuzzing para achar problemas.",
+      "resources": [
+        { "kind": "teoria", "title": "Go: pacote testing", "url": "https://pkg.go.dev/testing" },
+        { "kind": "teoria", "title": "Go Wiki: Table-driven tests", "url": "https://go.dev/wiki/TableDrivenTests" },
+        { "kind": "pratica", "title": "Learn Go with Tests", "url": "https://quii.gitbook.io/learn-go-with-tests" },
+        { "kind": "pratica", "title": "Go: Tutorial de fuzzing", "url": "https://go.dev/doc/tutorial/fuzz" }
+      ],
+      "subtopics": [
+        { "title": "Testes de tabela e subtestes", "summary": "t.Run, t.Helper, t.Parallel e mensagens de falha que dizem o que se esperava." },
+        { "title": "Dublês e injeção de dependência", "summary": "Fakes e stubs por interface, sem frameworks de mock." },
+        { "title": "httptest", "summary": "httptest.NewRecorder e httptest.NewServer para testar handlers e clientes." },
+        { "title": "Benchmarks", "summary": "testing.B, b.Loop, -benchmem e como comparar resultados com benchstat." },
+        { "title": "Cobertura e fuzzing", "summary": "go test -cover, cobertura de testes de integração e testes de fuzz nativos." }
+      ]
+    },
+    {
+      "title": "Concorrência",
+      "summary": "Goroutines, channels e sincronização: o ponto forte do Go no back-end. Você domina quando implementa um pool de workers que respeita cancelamento, evita vazamento de goroutines e explica um data race apontado pelo race detector.",
+      "resources": [
+        { "kind": "teoria", "title": "Go Blog: Go Concurrency Patterns: Pipelines and cancellation", "url": "https://go.dev/blog/pipelines" },
+        { "kind": "teoria", "title": "Go: The Go Memory Model", "url": "https://go.dev/ref/mem" },
+        { "kind": "pratica", "title": "Go: A Tour of Go, concorrência", "url": "https://go.dev/tour/concurrency/1" },
+        { "kind": "pratica", "title": "Go: Data Race Detector", "url": "https://go.dev/doc/articles/race_detector" }
+      ],
+      "subtopics": [
+        { "title": "Goroutines e channels", "summary": "Channels com e sem buffer, fechamento, range sobre channel e select." },
+        { "title": "Pacote sync", "summary": "Mutex, RWMutex, WaitGroup, Once e quando preferir mutex a channel." },
+        { "title": "context", "summary": "Cancelamento, prazos e valores por requisição propagados entre funções." },
+        { "title": "Padrões de concorrência", "summary": "Pipeline, fan-out/fan-in, pool de workers, limite de taxa e errgroup." },
+        { "title": "Data races e vazamentos", "summary": "go test -race e goroutines que nunca terminam." }
+      ]
+    },
+    {
+      "title": "APIs HTTP com net/http",
+      "summary": "Servidores e clientes HTTP com a biblioteca padrão, que já basta para APIs de produção. Você domina quando cria uma API REST com rotas, middlewares, validação e respostas JSON consistentes, e com timeouts definidos no servidor e no cliente.",
+      "resources": [
+        { "kind": "teoria", "title": "Go: pacote net/http", "url": "https://pkg.go.dev/net/http" },
+        { "kind": "teoria", "title": "Go Blog: Routing Enhancements for Go 1.22", "url": "https://go.dev/blog/routing-enhancements" },
+        { "kind": "pratica", "title": "Go: Writing Web Applications", "url": "https://go.dev/doc/articles/wiki/" },
+        { "kind": "pratica", "title": "Go: Tutorial Working with JSON", "url": "https://go.dev/doc/tutorial/json" }
+      ],
+      "subtopics": [
+        { "title": "Handlers e ServeMux", "summary": "http.Handler, padrões com método e curingas ({id}) e r.PathValue." },
+        { "title": "Middlewares", "summary": "Funções que envolvem handlers: log, recuperação de panic, autenticação e CORS." },
+        { "title": "JSON e validação", "summary": "encoding/json, tags de struct, decodificação estrita e erros de entrada claros." },
+        { "title": "Cliente HTTP", "summary": "http.Client com timeout, reaproveitamento de conexões e sempre fechar o Body." },
+        { "title": "Desligamento gracioso", "summary": "Server.Shutdown com sinais do sistema, para não cortar requisições em andamento." }
+      ]
+    },
+    {
+      "title": "Bancos de dados",
+      "summary": "Acesso a bancos relacionais com database/sql e pgx, mais as migrações de esquema. Você domina quando escreve consultas parametrizadas com transações, configura o pool de conexões, versiona o esquema com migrações e cancela consultas lentas por context.",
+      "resources": [
+        { "kind": "teoria", "title": "Go: Accessing relational databases", "url": "https://go.dev/doc/database/" },
+        { "kind": "teoria", "title": "PostgreSQL: documentação oficial", "url": "https://www.postgresql.org/docs/current/" },
+        { "kind": "pratica", "title": "Go: Tutorial Accessing a relational database", "url": "https://go.dev/doc/tutorial/database-access" },
+        { "kind": "pratica", "title": "sqlc: Getting started with PostgreSQL", "url": "https://docs.sqlc.dev/en/latest/tutorials/getting-started-postgresql.html" }
+      ],
+      "subtopics": [
+        { "title": "database/sql e drivers", "summary": "sql.DB como pool, QueryContext, Scan, NULLs e o driver pgx." },
+        { "title": "Transações", "summary": "BeginTx, níveis de isolamento e rollback com defer." },
+        { "title": "Migrações", "summary": "Mudanças de esquema versionadas, com ferramentas como golang-migrate ou goose." },
+        { "title": "SQL gerado vs. ORM", "summary": "sqlc, query builders e ORMs: as trocas entre controle e conveniência." },
+        { "title": "Injeção de SQL", "summary": "Parâmetros em vez de concatenar strings." }
+      ]
+    },
+    {
+      "title": "Autenticação e segurança",
+      "summary": "Proteger a API e o código: identidade, senhas, permissões e dependências. Você domina quando implementa login com senha armazenada em hash, sessões ou tokens com expiração, autorização por papel, e aponta na sua API os riscos do OWASP Top 10.",
+      "resources": [
+        { "kind": "teoria", "title": "Go: Security Best Practices", "url": "https://go.dev/security/best-practices" },
+        { "kind": "teoria", "title": "OWASP Top 10", "url": "https://top10.owasp.org/" },
+        { "kind": "pratica", "title": "Go: Tutorial govulncheck", "url": "https://go.dev/doc/tutorial/govulncheck" },
+        { "kind": "pratica", "title": "OWASP Cheat Sheet: Authentication", "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html" }
+      ],
+      "subtopics": [
+        { "title": "Hash de senhas", "summary": "bcrypt ou argon2, nunca hash rápido como SHA-256 puro." },
+        { "title": "Sessões e JWT", "summary": "Cookies seguros, expiração e revogação; quando JWT ajuda e quando atrapalha." },
+        { "title": "OAuth 2.0 e OpenID Connect", "summary": "Login com provedores externos usando golang.org/x/oauth2." },
+        { "title": "TLS e crypto", "summary": "HTTPS no servidor, crypto/rand e o que não implementar por conta própria." },
+        { "title": "Vulnerabilidades em dependências", "summary": "govulncheck no CI e atualização de módulos." }
+      ]
+    },
+    {
+      "title": "gRPC e Protocol Buffers",
+      "summary": "Comunicação entre serviços com contratos tipados e HTTP/2. Você domina quando define um serviço em .proto, gera o código, implementa servidor e cliente com deadlines e interceptors e evolui o contrato sem quebrar clientes antigos.",
+      "resources": [
+        { "kind": "teoria", "title": "gRPC: Introduction to gRPC", "url": "https://grpc.io/docs/what-is-grpc/introduction/" },
+        { "kind": "teoria", "title": "Protocol Buffers: Protobuf Basics: Go", "url": "https://protobuf.dev/getting-started/gotutorial/" },
+        { "kind": "pratica", "title": "gRPC: Quick start em Go", "url": "https://grpc.io/docs/languages/go/quickstart/" },
+        { "kind": "pratica", "title": "gRPC: Basics tutorial em Go", "url": "https://grpc.io/docs/languages/go/basics/" }
+      ],
+      "subtopics": [
+        { "title": "Arquivos .proto", "summary": "Mensagens, serviços, números de campo e regras de compatibilidade." },
+        { "title": "Tipos de chamada", "summary": "Unária, streaming do servidor, do cliente e bidirecional." },
+        { "title": "Deadlines, status e interceptors", "summary": "Códigos de status, metadata e interceptors para log e autenticação." }
+      ]
+    },
+    {
+      "title": "Observabilidade",
+      "summary": "Saber o que o serviço está fazendo em produção, com logs estruturados, métricas e traces. Você domina quando segue uma requisição lenta do log ao trace, cria métricas de latência e taxa de erro e define um alerta útil.",
+      "resources": [
+        { "kind": "teoria", "title": "Go Blog: Structured Logging with slog", "url": "https://go.dev/blog/slog" },
+        { "kind": "teoria", "title": "OpenTelemetry: Go", "url": "https://opentelemetry.io/docs/languages/go/" },
+        { "kind": "pratica", "title": "OpenTelemetry: Getting Started em Go", "url": "https://opentelemetry.io/docs/languages/go/getting-started/" },
+        { "kind": "pratica", "title": "Prometheus: Instrumenting a Go application", "url": "https://prometheus.io/docs/guides/go-application/" }
+      ],
+      "subtopics": [
+        { "title": "Logs estruturados com slog", "summary": "Níveis, atributos, handler JSON e ID de requisição em cada linha." },
+        { "title": "Métricas", "summary": "Contadores, histogramas e os sinais de ouro: latência, tráfego, erros e saturação." },
+        { "title": "Tracing distribuído", "summary": "Spans, propagação de contexto entre serviços e amostragem." },
+        { "title": "Health checks", "summary": "Endpoints de liveness e readiness para o orquestrador." }
+      ]
+    },
+    {
+      "title": "Desempenho e runtime",
+      "summary": "Como o runtime do Go funciona e como medir antes de otimizar. Você domina quando usa pprof para achar o gargalo de CPU ou memória, explica por que um valor escapou para o heap e ajusta o coletor de lixo com base em dados.",
+      "resources": [
+        { "kind": "teoria", "title": "Go: A Guide to the Go Garbage Collector", "url": "https://go.dev/doc/gc-guide" },
+        { "kind": "teoria", "title": "Go: Diagnostics", "url": "https://go.dev/doc/diagnostics" },
+        { "kind": "pratica", "title": "Go Blog: Profiling Go Programs", "url": "https://go.dev/blog/pprof" },
+        { "kind": "pratica", "title": "Go: Profile-guided optimization", "url": "https://go.dev/doc/pgo" }
+      ],
+      "subtopics": [
+        { "title": "pprof", "summary": "Perfis de CPU, heap, goroutines e bloqueio, inclusive via net/http/pprof." },
+        { "title": "Escape analysis e alocações", "summary": "go build -gcflags=-m, sync.Pool e menos alocações em código quente." },
+        { "title": "Coletor de lixo", "summary": "GOGC, GOMEMLIMIT e o equilíbrio entre memória e CPU." },
+        { "title": "Scheduler e execution trace", "summary": "Goroutines, threads e processadores (o modelo G-M-P), e go tool trace." }
+      ]
+    },
+    {
+      "title": "Sistemas distribuídos e mensageria",
+      "summary": "Serviços que conversam por filas e eventos e continuam de pé quando algo falha. Você domina quando publica e consome mensagens de forma idempotente, aplica retry com backoff e circuit breaker e usa cache sem servir dado errado.",
+      "resources": [
+        { "kind": "teoria", "title": "Microsoft: Circuit Breaker pattern", "url": "https://learn.microsoft.com/en-us/azure/architecture/patterns/circuit-breaker" },
+        { "kind": "teoria", "title": "Martin Fowler: Microservices", "url": "https://martinfowler.com/articles/microservices.html" },
+        { "kind": "pratica", "title": "NATS by Example", "url": "https://natsbyexample.com/" },
+        { "kind": "pratica", "title": "Redis: guia do go-redis", "url": "https://redis.io/docs/latest/develop/clients/go/" }
+      ],
+      "subtopics": [
+        { "title": "Filas e eventos", "summary": "NATS, Kafka e RabbitMQ; entrega pelo menos uma vez e a ordem das mensagens." },
+        { "title": "Idempotência", "summary": "Chaves de idempotência e consumidores que aguentam receber a mesma mensagem duas vezes." },
+        { "title": "Resiliência", "summary": "Timeouts, retry com backoff e jitter, circuit breaker e bulkhead." },
+        { "title": "Cache", "summary": "Redis, cache-aside, expiração e invalidação." },
+        { "title": "Consistência entre serviços", "summary": "Outbox transacional e sagas no lugar de transações distribuídas." }
+      ]
+    },
+    {
+      "title": "Containers e deploy",
+      "summary": "Levar o serviço para produção de forma repetível. Você domina quando gera uma imagem pequena com build multi-stage, configura o serviço por variáveis de ambiente, roda testes e build no CI e publica com health checks e desligamento gracioso.",
+      "resources": [
+        { "kind": "teoria", "title": "Docker: Multi-stage builds", "url": "https://docs.docker.com/build/building/multi-stage/" },
+        { "kind": "teoria", "title": "The Twelve-Factor App (português)", "url": "https://12factor.net/pt_br/" },
+        { "kind": "pratica", "title": "Docker: guia de Go", "url": "https://docs.docker.com/guides/golang/" },
+        { "kind": "pratica", "title": "Kubernetes: Learn Kubernetes Basics", "url": "https://kubernetes.io/docs/tutorials/kubernetes-basics/" }
+      ],
+      "subtopics": [
+        { "title": "Imagens Docker", "summary": "Multi-stage, imagens distroless ou scratch e usuário sem privilégios." },
+        { "title": "Configuração", "summary": "Variáveis de ambiente, segredos fora do código e valores padrão seguros." },
+        { "title": "CI/CD", "summary": "Lint, testes com -race, govulncheck e build da imagem a cada push." },
+        { "title": "Kubernetes", "summary": "Deployment, Service, probes, limites de recursos e rollout." }
+      ]
+    },
+    {
+      "title": "Projeto integrador",
+      "summary": "Um serviço completo que junta todo o caminho: API HTTP ou gRPC, Postgres, autenticação, mensageria, testes, observabilidade e deploy em container. Você domina quando outra pessoa consegue clonar, rodar, testar e entender o projeto só pelo README.",
+      "resources": [
+        { "kind": "teoria", "title": "Google: Go Style Guide", "url": "https://google.github.io/styleguide/go/" },
+        { "kind": "teoria", "title": "Go Wiki: Code Review Comments", "url": "https://go.dev/wiki/CodeReviewComments" },
+        { "kind": "pratica", "title": "Learn Go with Tests: Build an application", "url": "https://quii.gitbook.io/learn-go-with-tests/build-an-application/http-server" }
+      ],
+      "subtopics": [
+        { "title": "Estrutura do projeto", "summary": "cmd/ e internal/, pacotes por domínio e dependências injetadas no main." },
+        { "title": "Escopo do projeto", "summary": "Exemplo: encurtador de links ou fila de tarefas, com API, banco, worker assíncrono e métricas." },
+        { "title": "Documentação e revisão", "summary": "README, especificação OpenAPI ou .proto e revisão de código com o guia de estilo." }
+      ]
+    }
+  ],
+  "links": [
+    { "from": "context", "to": "Bancos de dados" },
+    { "from": "Benchmarks", "to": "Desempenho e runtime" },
+    { "from": "Dublês e injeção de dependência", "to": "Projeto integrador" },
+    { "from": "Health checks", "to": "Kubernetes" }
+  ]
+}
