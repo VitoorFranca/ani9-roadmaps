@@ -28,6 +28,7 @@ models/              um arquivo por roadmap (models/<chave>.json)
 docs/formato.md      o formato "ani9-roadmap", campo a campo
 scripts/validate.mjs validador: formato, limites, teoria + prática, links
 CONTRIBUTING.md      como contribuir e o que é um bom roadmap
+.claude/skills/      skill criar-roadmap para o Claude Code
 ```
 
 ## Validar
@@ -47,6 +48,21 @@ catálogo. Quando algum link quebra, ele abre uma issue.
 O app inclui este repositório numa **versão fixa**, como submódulo. Uma mudança
 aqui só chega ao app quando a versão é atualizada lá e o app é publicado.
 Assim, nenhum modelo entra no ar sem passar pelos testes do app.
+
+## Criar um roadmap com o Claude Code
+
+O repositório traz a skill [`criar-roadmap`](.claude/skills/criar-roadmap/SKILL.md).
+Com o [Claude Code](https://code.claude.com) aberto na raiz do repositório, rode:
+
+```
+/criar-roadmap <tema> [público/nível] [objetivo]
+```
+
+A skill pesquisa o assunto, desenha o caminho, escreve os resumos, abre e
+confere cada fonte, grava `models/<chave>.json` e roda o validador. Ela só abre
+um pull request se você pedir. O resultado segue as mesmas regras do
+[CONTRIBUTING.md](CONTRIBUTING.md) e passa pela mesma revisão de qualquer
+contribuição.
 
 ## Contribuir
 
