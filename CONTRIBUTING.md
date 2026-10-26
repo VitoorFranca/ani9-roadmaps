@@ -31,8 +31,12 @@ O formato completo está em [`docs/formato.md`](docs/formato.md).
 
 - **Robusto:** cobre o que um profissional ou estudante avançado da área
   espera que a pessoa saiba, na ordem em que se aprende.
-- **Útil:** cada tópico diz o que é e o que a pessoa precisa conseguir fazer.
+- **Útil:** todo cartão, tópico ou subtópico, abre com um parágrafo próprio
+  (o que é e por que importa) e fontes próprias, verificadas e tipadas.
 - **Direto:** aponta o caminho e as fontes, sem resumir a matéria inteira.
+- **Fiel ao assunto:** a quantidade de subtópicos e de fontes vem do assunto,
+  não de uma cota; escolhas entre opções são marcadas (recomendado,
+  alternativa) e o que não trava o caminho é opcional.
 - **Completo:** todo tópico tem fonte de **teoria** e de **prática**, e o
   caminho termina num projeto ou exercício que junta tudo.
 - **Honesto:** não promete resultado ("aprenda em 30 dias", "memorize 2×
@@ -41,16 +45,19 @@ O formato completo está em [`docs/formato.md`](docs/formato.md).
 
 ### Caminho
 
-- [ ] De 6 a 14 tópicos, em ordem: cada um depende só dos anteriores.
+- [ ] Tópicos em ordem de aprendizagem: cada um depende só dos anteriores.
 - [ ] Nenhum tópico genérico ("Conceitos básicos", "Avançado", "Extras").
-- [ ] De 2 a 6 subtópicos por tópico, só quando ajudam.
+- [ ] Subtópicos na quantidade que cada tópico pede; o terceiro nível só para
+      as opções de uma escolha ou as famílias de um assunto.
+- [ ] Toda escolha entre opções tem uma `recomendado` e as outras
+      `alternativa`; o que não trava o caminho está `opcional`.
 - [ ] O último tópico é um projeto ou exercício integrador.
 - [ ] Os `links` extras são poucos e cada um é uma dependência real.
 
 ### Texto
 
-- [ ] Cada resumo de tópico diz o que é e traz um "Você domina quando…" que dá
-      para verificar.
+- [ ] Todo cartão tem um parágrafo próprio: o que é e por que importa ou
+      quando se usa. Sem fórmula repetida em todos os cartões.
 - [ ] Os títulos são curtos (até cerca de 60 caracteres) e usam o termo que a
       área usa.
 - [ ] Português correto, sem jargão desnecessário.
@@ -65,20 +72,28 @@ referência com data e autoria.
 guiados, desafios com correção, listas de exercícios com gabarito, estudos de
 caso, simuladores, questões de provas oficiais.
 
-- [ ] Toda URL foi aberta e trata do tópico. Nunca invente nem deduza URLs.
+- [ ] Todo cartão tem ao menos uma fonte própria, que trata dele (a página do
+      assunto, não a inicial do site), com `format` (oficial, código, artigo,
+      curso, vídeo, podcast, livro, exercício).
+- [ ] Toda URL foi aberta e trata do cartão. Nunca invente nem deduza URLs;
+      `--titles` mostra o título real de cada página.
 - [ ] As fontes de prática exigem que a pessoa faça algo.
 - [ ] Fontes gratuitas. Uma fonte paga só entra se for a referência
       indiscutível, e o título avisa "(pago)".
 - [ ] Links estáveis, sem rastreamento (`utm_`, `ref=`), sem encurtadores e
       sem páginas de busca ou de login.
 - [ ] Título da fonte no formato `Site ou autor: assunto`.
-- [ ] De 2 a 4 fontes por tópico.
+- [ ] Poucas e boas: tipicamente 2 a 4 por cartão, até 8 quando há material
+      bom de tipos diferentes.
 
 ## Direitos
 
 Os modelos só **apontam** para as fontes, não copiam o conteúdo delas.
-Não copie a estrutura nem o texto de outros roadmaps: use-os só para conferir
-se falta algo. Alguns, como o roadmap.sh, proíbem reutilização.
+Não copie textos, listas de cartões nem listas de fontes de outros roadmaps:
+use-os só para conferir cobertura e granularidade. O roadmap.sh, por exemplo,
+só permite uso pessoal do seu conteúdo. O método (cartões com conteúdo e
+fontes próprias, marcações, granularidade pelo assunto) é de todos; o conteúdo
+é escrito e escolhido aqui.
 
 Ao contribuir, você concorda em licenciar sua contribuição sob a
 [CC BY 4.0](LICENSE). Os scripts ficam sob a [licença MIT](scripts/LICENSE).

@@ -1,36 +1,39 @@
 # Revisão final
 
-Antes de relatar, confira cada item. Se um item falhar, corrija o modelo.
+Antes de relatar, confira cada item. Se um item falhar, corrija o roadmap.
 
-## Caminho
+## Mapa
 
 - [ ] Uma pessoa do público suposto consegue começar pelo primeiro tópico sem
       precisar de algo que só aparece depois.
-- [ ] Nenhum tópico é genérico ("Conceitos básicos", "Avançado", "Extras").
 - [ ] Um profissional da área não sentiria falta de nada essencial para o
-      objetivo, e o que é opcional não está no caminho principal.
+      objetivo, e nada obsoleto ou de nicho está no caminho principal.
+- [ ] A quantidade de subtópicos varia com o assunto. Se quase todos os
+      tópicos têm o mesmo número, revise: algum está inchado ou raso.
+- [ ] Toda escolha entre opções tem uma `recomendado` e as outras
+      `alternativa`; o que não trava o caminho está `opcional`.
+- [ ] O terceiro nível só aparece para opções ou famílias de um assunto.
 - [ ] O último tópico é um projeto integrador, com fonte de prática que tenha
-      enunciado ou referência de projeto.
-- [ ] Os `links` extras são poucos e cada um corresponde a uma dependência
-      real.
+      enunciado.
+- [ ] Os `links` extras são poucos e cada um é uma dependência real.
 
 ## Texto
 
-- [ ] Cada resumo de tópico tem o que é e um "Você domina quando…" que dá para
-      verificar.
-- [ ] Nenhum resumo ensina a matéria inteira; todos ficam abaixo de 400
-      caracteres.
-- [ ] Os títulos são curtos (até cerca de 60 caracteres), específicos e usam o
-      termo que a área usa.
-- [ ] O texto é em português correto, sem jargão desnecessário e sem promessa
-      de resultado.
+- [ ] Todo cartão, de todos os níveis, tem um parágrafo próprio: o que é e por
+      que importa ou quando se usa.
+- [ ] Os resumos não seguem uma fórmula repetida; nenhum ensina a matéria
+      inteira nem repete o título.
+- [ ] Os títulos são curtos, específicos, únicos e usam o termo da área.
+- [ ] Português correto, sem jargão desnecessário e sem promessa de resultado.
+- [ ] Nada foi copiado de outro roadmap (textos, listas de cartões, listas de
+      fontes).
 
 ## Fontes
 
-- [ ] Todo tópico tem teoria e prática.
-- [ ] Toda URL foi aberta com WebFetch e trata do tópico.
-- [ ] As fontes de prática exigem que a pessoa faça algo.
-- [ ] Predominam fontes primárias e gratuitas, e não há URLs repetidas sem
-      motivo.
-- [ ] `node scripts/validate.mjs models/<chave>.json
-      --check-links` terminou com "Sem erros.".
+- [ ] Todo cartão tem ao menos uma fonte própria, que trata dele (não a página
+      inicial do site, nem a fonte do tópico pai).
+- [ ] Todo tópico tem teoria e prática; as fontes de prática exigem fazer algo.
+- [ ] Toda fonte tem `format`, e predominam fontes oficiais e gratuitas.
+- [ ] Na saída de `--titles`, cada página é mesmo sobre o seu cartão.
+- [ ] `node scripts/validate.mjs models/<chave>.json --titles` terminou com
+      "Sem erros.".
