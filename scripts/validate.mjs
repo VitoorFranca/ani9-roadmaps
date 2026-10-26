@@ -1,12 +1,15 @@
 #!/usr/bin/env node
-// Valida modelos de roadmap do ANI-9 (formato "ani9-roadmap", versão 1).
+// Valida modelos de roadmap do ANI-9 (formato "ani9-roadmap", versões 1 e 2).
 //
-//   node scripts/validate.mjs [arquivo.json | pasta ...] [--check-links]
+//   node scripts/validate.mjs [arquivo.json | pasta ...] [--check-links] [--titles]
 //
 // Sem argumentos, valida todos os arquivos de models/.
 // ERRO impede o app de carregar o modelo, ou quebra a promessa do roadmap
-// (todo tópico tem teoria e prática). AVISO vale uma olhada.
+// (na versão 2: todo cartão tem resumo e fontes; todo tópico, teoria e
+// prática). AVISO vale uma olhada.
 // Com --check-links, cada URL é aberta; link que não abre é erro.
+// Com --titles (implica --check-links), mostra o título real de cada página ao
+// lado do nome dado à fonte, para conferir se a fonte trata mesmo do cartão.
 // Código de saída: 0 = sem erros, 1 = erros, 2 = não deu para ler algum arquivo.
 // Sem dependências: só Node 20+.
 
@@ -30,11 +33,15 @@ const AREAS = [
   "outros",
 ];
 const LEVELS = ["iniciante", "intermediario", "avancado", "completo"];
+const FORMATS = ["oficial", "codigo", "artigo", "curso", "video", "podcast", "livro", "exercicio"];
+const MARKERS = ["recomendado", "alternativa", "opcional"];
 const ROOT_KEYS = ["format", "version", "title", "summary", "area", "level", "topics", "links"];
-const NODE_KEYS = ["title", "summary", "resources", "subtopics"];
+const NODE_KEYS = ["title", "summary", "marker", "resources", "subtopics"];
+const RESOURCE_KEYS = ["kind", "format", "title", "url"];
 
 const args = process.argv.slice(2);
-const checkLinks = args.includes("--check-links");
+const showTitles = args.includes("--titles");
+const checkLinks = showTitles || args.includes("--check-links");
 const targets = args.filter((a) => !a.startsWith("--"));
 const files = (targets.length ? targets : [join(import.meta.dirname, "..", "models")]).flatMap((target) =>
   statSync(target).isDirectory()
@@ -82,7 +89,9 @@ async function validate(path) {
   for (const extra of Object.keys(file).filter((k) => !ROOT_KEYS.includes(k))) warn("raiz", `campo desconhecido "${extra}"`);
 
   if (file.format !== "ani9-roadmap") err("raiz", 'format deve ser "ani9-roadmap"');
-  if (file.version !== 1) err("raiz", "version deve ser 1");
+  if (file.version !== 1 && file.version !== 2) err("raiz", "version deve ser 2 (ou 1, a antiga)");
+  if (file.version === 1) warn("raiz", "versão 1: migre para a 2 (resumo e fontes em todo cartão, formato das fontes)");
+  const v2 = file.version === 2;
   if (!text(file.title)) err("raiz", "title vazio");
   if (text(file.title).length > LIMITS.title) err("raiz", `title passa de ${LIMITS.title} caracteres`);
   if (file.area === undefined) err("raiz", `sem area (tema): use um de ${AREAS.join(", ")}`);
@@ -96,10 +105,11 @@ async function validate(path) {
   const topics = Array.isArray(file.topics) ? file.topics : [];
   if (topics.length > LIMITS.topics) err("raiz", `mais de ${LIMITS.topics} tópicos`);
   if (topics.length > 0 && topics.length < 5) warn("raiz", `só ${topics.length} tópicos: está completo?`);
-  if (topics.length > 16) warn("raiz", `${topics.length} tópicos: dá para agrupar? Roadmaps longos demais desanimam`);
+  if (topics.length > 40) warn("raiz", `${topics.length} tópicos: dá para agrupar parte deles como subtópicos?`);
 
   const urls = new Map(); // url → where
   const titles = new Map(); // lowercased title → where
+  const named = new Map(); // url → name given to the source (for --titles)
   let nodeCount = 0;
 
   function checkNode(node, where, isTopic) {
@@ -112,20 +122,38 @@ async function validate(path) {
     if (title.length > LIMITS.title) err(where, `title passa de ${LIMITS.title} caracteres`);
     if (title.length > 60) warn(where, "título longo: o cartão fica pesado no quadro");
     const titleKey = title.toLowerCase();
-    if (titles.has(titleKey)) warn(where, `título repetido (também em ${titles.get(titleKey)}); as ligações usam o primeiro`);
-    else titles.set(titleKey, where);
+    if (titles.has(titleKey)) {
+      const message = `título repetido (também em ${titles.get(titleKey)}); as ligações usam o primeiro`;
+      if (v2) err(where, message);
+      else warn(where, message);
+    } else titles.set(titleKey, where);
+
+    if (node.marker !== undefined) {
+      if (!v2) err(where, "marker só existe na versão 2");
+      else if (!MARKERS.includes(node.marker)) err(where, `marker "${node.marker}" desconhecido: use ${MARKERS.join(", ")}`);
+    }
 
     const summary = text(node.summary);
     if (summary.length > LIMITS.summary) err(where, `summary com ${summary.length} caracteres (máx. ${LIMITS.summary})`);
-    if (isTopic && !summary) err(where, "tópico sem summary");
-    if (!isTopic && !summary) warn(where, "subtópico sem summary");
+    if (!summary) {
+      if (isTopic || v2) err(where, "cartão sem summary: todo cartão diz o que é e por que importa");
+      else warn(where, "subtópico sem summary");
+    } else if (v2 && summary.length < 60) warn(where, "summary curto: diga o que é e por que importa (um parágrafo)");
 
     const resources = Array.isArray(node.resources) ? node.resources : [];
     if (resources.length > LIMITS.resources) err(where, `mais de ${LIMITS.resources} fontes`);
-    if (resources.length > 5) warn(where, `${resources.length} fontes: escolha as melhores (ideal 2 a 4)`);
+    else if (resources.length > 8) warn(where, `${resources.length} fontes: fique com as melhores (até 8)`);
+    if (v2 && resources.length === 0) err(where, "cartão sem fonte: todo cartão leva a pelo menos uma fonte própria");
     for (const [i, resource] of resources.entries()) {
       const at = `${where} › fonte ${i + 1}`;
+      for (const extra of Object.keys(resource ?? {}).filter((k) => !RESOURCE_KEYS.includes(k))) {
+        warn(at, `campo desconhecido "${extra}"`);
+      }
       if (resource?.kind !== "teoria" && resource?.kind !== "pratica") err(at, 'kind deve ser "teoria" ou "pratica"');
+      if (resource?.format === undefined) {
+        if (v2) err(at, `sem format: use ${FORMATS.join(", ")}`);
+      } else if (!v2) err(at, "format só existe na versão 2");
+      else if (!FORMATS.includes(resource.format)) err(at, `format "${resource.format}" desconhecido: use ${FORMATS.join(", ")}`);
       if (!text(resource?.title)) err(at, "title vazio");
       if (text(resource?.title).length > LIMITS.title) err(at, `title passa de ${LIMITS.title} caracteres`);
       const url = text(resource?.url);
@@ -142,8 +170,14 @@ async function validate(path) {
       } else if (parsed.protocol === "http:") warn(at, "url sem https");
       if (url.length > LIMITS.url) err(at, "url longa demais");
       if (/[?&](utm_|ref=|aff|affiliate)/i.test(url)) warn(at, "url com rastreamento/afiliado: limpe os parâmetros");
-      if (urls.has(url)) warn(at, `mesma url já usada em ${urls.get(url)}`);
-      else urls.set(url, at);
+      if (urls.has(url)) {
+        const message = `mesma url já usada em ${urls.get(url)}: aponte a parte da fonte que trata deste cartão`;
+        if (v2) err(at, message);
+        else warn(at, message);
+      } else {
+        urls.set(url, at);
+        named.set(url, text(resource?.title));
+      }
     }
     const kinds = new Set(resources.map((r) => r?.kind));
     if (isTopic) {
@@ -152,19 +186,36 @@ async function validate(path) {
     }
   }
 
+  /** Subtopics of a card: as many as the subject asks for; one more level in version 2. */
+  function checkChildren(node, where, depth) {
+    const subs = Array.isArray(node?.subtopics) ? node.subtopics : [];
+    if (subs.length > LIMITS.subtopics) err(where, `mais de ${LIMITS.subtopics} subtópicos`);
+    if (subs.length > 15) warn(where, `${subs.length} subtópicos lado a lado: agrupe parte deles num subtópico com subtópicos próprios`);
+    for (const [j, sub] of subs.entries()) {
+      const at = `${where} › ${"sub".repeat(depth)}tópico ${j + 1} "${text(sub?.title)}"`;
+      checkNode(sub, at, false);
+      if (sub?.subtopics !== undefined) {
+        if (!v2) err(at, "subtópico só tem subtópicos na versão 2");
+        else if (depth >= 2) err(at, "o terceiro nível é o último: este cartão não tem subtópicos");
+        else checkChildren(sub, at, depth + 1);
+      }
+    }
+  }
+
   for (const [i, topic] of topics.entries()) {
     const where = `tópico ${i + 1} "${text(topic?.title)}"`;
     checkNode(topic, where, true);
-    const subs = Array.isArray(topic?.subtopics) ? topic.subtopics : [];
-    if (subs.length > LIMITS.subtopics) err(where, `mais de ${LIMITS.subtopics} subtópicos`);
-    if (subs.length > 8) warn(where, `${subs.length} subtópicos: vale dividir o tópico?`);
-    for (const [j, sub] of subs.entries()) {
-      const at = `${where} › subtópico ${j + 1} "${text(sub?.title)}"`;
-      if (sub?.subtopics) err(at, "subtópico não tem subtópicos");
-      checkNode(sub, at, false);
-    }
+    checkChildren(topic, where, 1);
   }
   if (nodeCount > LIMITS.nodes) err("raiz", `mais de ${LIMITS.nodes} cartões`);
+
+  // Which topic each card belongs to, to spot arrows that cross the whole map.
+  const topicOf = new Map();
+  const mark = (node, index) => {
+    if (node?.title) topicOf.set(text(node.title).toLowerCase(), index);
+    for (const sub of Array.isArray(node?.subtopics) ? node.subtopics : []) mark(sub, index);
+  };
+  topics.forEach((topic, index) => mark(topic, index));
 
   const links = Array.isArray(file.links) ? file.links : [];
   if (links.length > LIMITS.links) err("raiz", `mais de ${LIMITS.links} ligações`);
@@ -174,11 +225,14 @@ async function validate(path) {
       if (!titles.has(text(link?.[end]).toLowerCase())) err(at, `"${text(link?.[end])}" não é título de nenhum cartão`);
     }
     if (text(link?.from).toLowerCase() === text(link?.to).toLowerCase()) err(at, "liga um cartão a ele mesmo");
+    const span = Math.abs((topicOf.get(text(link?.from).toLowerCase()) ?? 0) - (topicOf.get(text(link?.to).toLowerCase()) ?? 0));
+    if (span > 2) warn(at, `liga cartões a ${span} tópicos de distância: a seta cruza o mapa; diga a dependência no resumo`);
   }
 
   if (checkLinks && urls.size > 0) {
     const results = await mapLimit([...urls], 8, async ([url, where]) => [url, where, await probe(url)]);
     for (const [url, where, result] of results) {
+      if (showTitles) console.log(`TÍTULO ${where}\n       fonte:  ${named.get(url)}\n       página: ${result.pageTitle ?? "(sem título)"}`);
       if (!result.ok) err(where, `link não abre (${result.reason}): ${url}`);
       else if (result.reason) warn(where, `o site bloqueou a verificação (${result.reason}): confira no navegador: ${url}`);
       else if (result.redirectedTo) warn(where, `link redireciona para ${result.redirectedTo}: prefira o destino`);
@@ -205,14 +259,16 @@ async function probe(url) {
         signal: controller.signal,
         headers: { "user-agent": "Mozilla/5.0 (ANI-9 roadmap link check)", accept: "text/html,*/*" },
       });
-      await response.body?.cancel();
+      if (method === "GET" && showTitles) {
+        response.pageTitle = await readTitle(response);
+      } else await response.body?.cancel();
       return response;
     } finally {
       clearTimeout(timer);
     }
   };
   try {
-    let response = await attempt("HEAD");
+    let response = await attempt(showTitles ? "GET" : "HEAD");
     // Muitos sites recusam HEAD ou robôs: tenta um GET antes de dizer que quebrou.
     if (response.status >= 400) response = await attempt("GET");
     if (response.status === 403 || response.status === 429) return { ok: true, reason: `HTTP ${response.status}` };
@@ -220,10 +276,37 @@ async function probe(url) {
     const final = response.url && stripSlash(response.url) !== stripSlash(url) ? response.url : null;
     const sameSite =
       final && new URL(final).hostname.replace(/^www\./, "") === new URL(url).hostname.replace(/^www\./, "");
-    return { ok: true, redirectedTo: final && !sameSite ? final : null };
+    return { ok: true, redirectedTo: final && !sameSite ? final : null, pageTitle: response.pageTitle };
   } catch (error) {
     return { ok: false, reason: error.name === "AbortError" ? "tempo esgotado" : (error.cause?.code ?? error.message) };
   }
+}
+
+/** The page's <title> (or first heading), from its first 256 KB. */
+async function readTitle(response) {
+  const reader = response.body?.getReader();
+  if (!reader) return null;
+  let html = "";
+  const decoder = new TextDecoder();
+  while (html.length < 262_144) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    html += decoder.decode(value, { stream: true });
+    if (/<\/title>/i.test(html)) break;
+  }
+  await reader.cancel().catch(() => {});
+  const match = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) ?? html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
+  if (!match) return null;
+  return match[1]
+    .replace(/<[^>]+>/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/&#39;|&#x27;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 160);
 }
 
 function stripSlash(url) {

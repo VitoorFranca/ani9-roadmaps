@@ -1,8 +1,10 @@
 # Roadmaps do ANI-9
 
 Catálogo aberto de roadmaps de estudo: o caminho de um assunto em ordem de
-aprendizagem, com tópicos, subtópicos, um resumo direto de cada passo e fontes
-de **teoria** e de **prática**.
+aprendizagem, desenhado como mapa: tópicos na espinha, subtópicos ao lado,
+escolhas marcadas (recomendado, alternativa, opcional) e, em **cada cartão**, um
+resumo de um parágrafo e fontes próprias de **teoria** e de **prática**, cada
+uma com o seu tipo (oficial, código, artigo, curso, vídeo, livro, exercício).
 
 No [ANI-9](https://www.ani9.online), estes roadmaps aparecem em
 **Roadmaps → Modelos do ANI-9**. Quem clica em **Usar modelo** recebe uma cópia
@@ -26,8 +28,9 @@ roadmaps são bem-vindas.
 ```
 models/              um arquivo por roadmap (models/<chave>.json)
 docs/formato.md      o formato "ani9-roadmap", campo a campo
-scripts/validate.mjs validador: formato, limites, teoria + prática, links
+scripts/validate.mjs validador: formato, limites, fontes em todo cartão, links e títulos
 CONTRIBUTING.md      como contribuir e o que é um bom roadmap
+.claude/skills/      skill criar-roadmap para o Claude Code
 ```
 
 ## Validar
@@ -37,6 +40,7 @@ Só é preciso Node 20 ou mais novo, sem instalar nada:
 ```bash
 node scripts/validate.mjs                        # todos os modelos
 node scripts/validate.mjs models/back-end-go.json --check-links
+node scripts/validate.mjs models/back-end-go.json --titles   # título real de cada página
 ```
 
 O CI valida todo pull request e, uma vez por semana, abre cada link do
@@ -44,9 +48,33 @@ catálogo. Quando algum link quebra, ele abre uma issue.
 
 ## Como o ANI-9 usa este repositório
 
-O app inclui este repositório numa **versão fixa**, como submódulo. Uma mudança
-aqui só chega ao app quando a versão é atualizada lá e o app é publicado.
-Assim, nenhum modelo entra no ar sem passar pelos testes do app.
+O app inclui este repositório numa **versão fixa**, como submódulo. Depois de
+cada merge aqui, o app abre sozinho um pull request que move a versão fixa e
+roda os testes dele; o modelo entra no ar quando esse pull request é aceito e o
+app é publicado. Assim, nenhum modelo chega às pessoas sem passar pelos testes
+do app.
+
+## Criar um roadmap com o Claude Code
+
+O repositório traz a skill [`criar-roadmap`](.claude/skills/criar-roadmap/SKILL.md).
+Com o [Claude Code](https://code.claude.com) aberto na raiz do repositório, rode:
+
+```
+/criar-roadmap <tema> [público/nível] [objetivo]
+```
+
+A skill pesquisa o assunto, desenha o caminho, escreve os resumos, abre e
+confere cada fonte, grava `models/<chave>.json` e roda o validador. Ela só abre
+um pull request se você pedir. O resultado segue as mesmas regras do
+[CONTRIBUTING.md](CONTRIBUTING.md) e passa pela mesma revisão de qualquer
+contribuição.
+
+## Criar um roadmap pelo assistente Ani
+
+O [assistente de voz do ANI-9](https://github.com/VitoorFranca/ani-assistente)
+também cria roadmaps: peça "cria um roadmap de …". Ele segue esta skill, valida
+o arquivo e, se você confirmar, abre o pull request aqui com o `gh` (o seu login
+do GitHub; sem permissão de escrita, por um fork).
 
 ## Contribuir
 
