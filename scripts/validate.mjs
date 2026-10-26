@@ -209,6 +209,14 @@ async function validate(path) {
   }
   if (nodeCount > LIMITS.nodes) err("raiz", `mais de ${LIMITS.nodes} cartões`);
 
+  // Which topic each card belongs to, to spot arrows that cross the whole map.
+  const topicOf = new Map();
+  const mark = (node, index) => {
+    if (node?.title) topicOf.set(text(node.title).toLowerCase(), index);
+    for (const sub of Array.isArray(node?.subtopics) ? node.subtopics : []) mark(sub, index);
+  };
+  topics.forEach((topic, index) => mark(topic, index));
+
   const links = Array.isArray(file.links) ? file.links : [];
   if (links.length > LIMITS.links) err("raiz", `mais de ${LIMITS.links} ligações`);
   for (const [i, link] of links.entries()) {
@@ -217,6 +225,8 @@ async function validate(path) {
       if (!titles.has(text(link?.[end]).toLowerCase())) err(at, `"${text(link?.[end])}" não é título de nenhum cartão`);
     }
     if (text(link?.from).toLowerCase() === text(link?.to).toLowerCase()) err(at, "liga um cartão a ele mesmo");
+    const span = Math.abs((topicOf.get(text(link?.from).toLowerCase()) ?? 0) - (topicOf.get(text(link?.to).toLowerCase()) ?? 0));
+    if (span > 2) warn(at, `liga cartões a ${span} tópicos de distância: a seta cruza o mapa; diga a dependência no resumo`);
   }
 
   if (checkLinks && urls.size > 0) {

@@ -1432,20 +1432,8 @@
   ],
   "links": [
     {
-      "from": "Few-shot",
-      "to": "Gatilhos de escalonamento"
-    },
-    {
-      "from": "Erros estruturados",
-      "to": "Propagação de erros entre agentes"
-    },
-    {
       "from": "Revisão em várias passadas",
       "to": "Orquestração multiagente"
-    },
-    {
-      "from": "Subagente Explore",
-      "to": "Anotações e /compact"
     }
   ]
 }

@@ -15,7 +15,8 @@ Antes de relatar, confira cada item. Se um item falhar, corrija o roadmap.
 - [ ] O terceiro nível só aparece para opções ou famílias de um assunto.
 - [ ] O último tópico é um projeto integrador, com fonte de prática que tenha
       enunciado.
-- [ ] Os `links` extras são poucos e cada um é uma dependência real.
+- [ ] Os `links` extras são raros, cada um é uma dependência real e liga cartões
+      próximos (setas longas cruzam o mapa).
 
 ## Texto
 

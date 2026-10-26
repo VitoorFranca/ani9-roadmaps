@@ -2622,24 +2622,8 @@
   ],
   "links": [
     {
-      "from": "context",
-      "to": "Go com bancos de dados"
-    },
-    {
-      "from": "Benchmarks",
-      "to": "Desempenho e runtime"
-    },
-    {
-      "from": "Dublês e injeção de dependência",
-      "to": "Arquitetura de serviços"
-    },
-    {
       "from": "Health checks",
       "to": "Kubernetes"
-    },
-    {
-      "from": "Métodos e códigos de status",
-      "to": "Design de APIs"
     }
   ]
 }

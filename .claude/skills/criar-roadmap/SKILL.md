@@ -109,8 +109,10 @@ organiza o estudo; ganho de aprendizagem é hipótese, não fato comprovado.
      `opcional` no que não trava o caminho. A maioria dos cartões fica sem.
    - **Títulos:** o termo que a área usa, curto (até ~60 caracteres), único no
      roadmap. Nada de "Conceitos básicos", "Avançado", "Extras".
-   - **`links`:** poucos, só para pré-requisitos fora da sequência (um
-     subtópico de "Bancos de dados" necessário em "Autenticação").
+   - **`links`:** raros, só para pré-requisitos fora da sequência entre
+     cartões próximos no mapa (no máximo dois tópicos de distância). Uma seta
+     longa atravessa o mapa por cima dos outros cartões; uma dependência
+     distante fica melhor dita no resumo do cartão.
    - O que for avançado demais para o objetivo vai no relatório como "próximos
      passos", não no roadmap.
 
