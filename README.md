@@ -69,13 +69,6 @@ um pull request se você pedir. O resultado segue as mesmas regras do
 [CONTRIBUTING.md](CONTRIBUTING.md) e passa pela mesma revisão de qualquer
 contribuição.
 
-## Criar um roadmap pelo assistente Ani
-
-O [assistente de voz do ANI-9](https://github.com/VitoorFranca/ani-assistente)
-também cria roadmaps: peça "cria um roadmap de …". Ele segue esta skill, valida
-o arquivo e, se você confirmar, abre o pull request aqui com o `gh` (o seu login
-do GitHub; sem permissão de escrita, por um fork).
-
 ## Contribuir
 
 Veja o [CONTRIBUTING.md](CONTRIBUTING.md).
