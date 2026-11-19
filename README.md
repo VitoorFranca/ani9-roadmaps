@@ -7,9 +7,10 @@ resumo de um parágrafo e fontes próprias de **teoria** e de **prática**, cada
 uma com o seu tipo (oficial, código, artigo, curso, vídeo, livro, exercício).
 
 No [ANI-9](https://www.ani9.online), estes roadmaps aparecem em
-**Roadmaps → Modelos do ANI-9**. Quem clica em **Usar modelo** recebe uma cópia
-própria para estudar, marcar o progresso e editar à vontade. Os arquivos também
-servem fora do app: são JSON simples e legíveis.
+**Roadmaps → Roadmaps didáticos**. Quem clica em **Começar** segue o roadmap em
+etapas: a etapa seguinte abre quando a atual termina, e cada passo traz os
+objetivos e os critérios pelos quais o tutor do ANI-9 avalia. Os arquivos
+também servem fora do app: são JSON simples e legíveis.
 
 ## Roadmaps
 

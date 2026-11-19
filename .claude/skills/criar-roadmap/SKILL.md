@@ -1,6 +1,6 @@
 ---
 name: "criar-roadmap"
-description: "Cria ou revisa um roadmap de estudo do catálogo ani9-roadmaps a partir de um tema: um mapa com tópicos em ordem, subtópicos na granularidade que o assunto pede, e em cada cartão um resumo de um parágrafo e fontes próprias verificadas e tipadas, em models/<chave>.json (formato 2). Use quando pedirem para criar, gerar, montar, revisar ou melhorar um roadmap, trilha ou modelo de estudo sobre qualquer assunto."
+description: "Cria ou revisa um roadmap de estudo do catálogo ani9-roadmaps a partir de um tema: um mapa com tópicos em ordem, subtópicos na granularidade que o assunto pede, e em cada cartão um resumo de um parágrafo e fontes próprias verificadas e tipadas, em models/<chave>.json (formato 3, o do roadmap didático, com objetivos e critérios de avaliação em cada passo). Use quando pedirem para criar, gerar, montar, revisar ou melhorar um roadmap, trilha ou modelo de estudo sobre qualquer assunto."
 argument-hint: "Tema [público/nível] [objetivo]"
 user-invocable: true
 disable-model-invocation: false
@@ -17,13 +17,14 @@ $ARGUMENTS
 Você recebe um tema e, às vezes, o público, o nível ou o objetivo. O resultado
 é **um roadmap do catálogo**: um arquivo JSON em `models/<chave>.json` deste
 repositório ([ani9-roadmaps](https://github.com/VitoorFranca/ani9-roadmaps),
-público, CC BY 4.0), no formato 2 de [`docs/formato.md`](../../../docs/formato.md).
+público, CC BY 4.0), no formato 3 de [`docs/formato.md`](../../../docs/formato.md).
 
 No [ANI-9](https://www.ani9.online), o roadmap aparece em **Roadmaps → Modelos
-do ANI-9**. Quem clica em **Usar modelo** recebe uma cópia própria: os tópicos
-formam a espinha do mapa, os subtópicos saem para os lados com setas
-tracejadas, e **cada cartão abre um painel com o resumo e as fontes daquele
-assunto**. O catálogo é para qualquer área do conhecimento, não para um nicho.
+didáticos**. Quem clica em **Começar** segue o roadmap em etapas: cada tópico
+é uma etapa, cada cartão abaixo dele é um passo com resumo, objetivos e
+fontes, e a etapa seguinte só abre quando a atual termina. O tutor do ANI-9
+avalia cada passo pelos **critérios** escritos no modelo. O catálogo é para
+qualquer área do conhecimento, não para um nicho.
 
 ## O que é um bom roadmap
 
@@ -109,10 +110,9 @@ organiza o estudo; ganho de aprendizagem é hipótese, não fato comprovado.
      `opcional` no que não trava o caminho. A maioria dos cartões fica sem.
    - **Títulos:** o termo que a área usa, curto (até ~60 caracteres), único no
      roadmap. Nada de "Conceitos básicos", "Avançado", "Extras".
-   - **`links`:** raros, só para pré-requisitos fora da sequência entre
-     cartões próximos no mapa (no máximo dois tópicos de distância). Uma seta
-     longa atravessa o mapa por cima dos outros cartões; uma dependência
-     distante fica melhor dita no resumo do cartão.
+   - **Pré-requisitos fora da sequência:** raros. No formato 3 vão em
+     `requires` no cartão que depende, apontando para um passo da mesma etapa
+     ou de uma anterior.
    - O que for avançado demais para o objetivo vai no relatório como "próximos
      passos", não no roadmap.
 
@@ -139,12 +139,32 @@ organiza o estudo; ganho de aprendizagem é hipótese, não fato comprovado.
      sites de documentação ajudam a achar a página exata.
    - A mesma URL não se repete no roadmap.
 
-6. **Gravar** em `models/<chave>.json`: `"version": 2`, `area` e `level` com os
-   valores de `docs/formato.md`, indentação de 2 espaços. A `<chave>` é o tema
+6. **Escrever objetivos e critérios de cada passo** (todo cartão abaixo de um
+   tópico), a partir das fontes que você abriu:
+   - `objectives`: 1 a 3 frases sobre o que a pessoa passa a conseguir fazer,
+     começando pelo verbo ("Explicar…", "Configurar…"). Nada de "entender" ou
+     "conhecer": use algo que se possa observar.
+   - `criteria`: 2 a 4 por passo. Cada um diz o que a pessoa precisa mostrar
+     numa conversa por escrito (`text`), de que tipo é (`kind`: explicar,
+     aplicar, comparar, depurar, construir) e o que a resposta certa precisa
+     trazer (`expect`: os pontos essenciais, concretos; é o gabarito do tutor).
+   - Cubra o essencial do passo, não curiosidades. Prefira explicar e aplicar.
+     Numa opção de uma escolha, um critério cobre quando escolher aquela opção.
+     Num passo de projeto, use ao menos um `construir`.
+   - O `expect` só afirma o que as fontes sustentam. Em assunto recente ou
+     específico de um produto, confira na fonte antes de escrever.
+   - Dê a cada cartão um `id` em slug, estável e único. Marque com
+     `"choice": true` o cartão cujos subtópicos são opções, e use `requires`
+     (ids) para um pré-requisito fora da sequência.
+
+7. **Gravar** em `models/<chave>.json`: `"version": 3`, `"revision": 1` (some 1
+   ao revisar um modelo já publicado, e nunca mude o `id` de um cartão
+   publicado), `area` e `level` com os valores de `docs/formato.md`, indentação
+   de 2 espaços. A `<chave>` é o tema
    em slug (a-z, 0-9, hífen), como `back-end-node`. Acrescente o roadmap à
    tabela "Roadmaps" do `README.md`.
 
-7. **Validar e conferir as fontes.** Na raiz do repositório:
+8. **Validar e conferir as fontes.** Na raiz do repositório:
 
    ```bash
    node scripts/validate.mjs models/<chave>.json --titles
@@ -158,10 +178,10 @@ organiza o estudo; ganho de aprendizagem é hipótese, não fato comprovado.
    - Quando um site bloquear a verificação (HTTP 403/429), confirme com
      WebFetch.
 
-8. **Revisar** com [`references/qualidade.md`](references/qualidade.md) e
+9. **Revisar** com [`references/qualidade.md`](references/qualidade.md) e
    ajustar o que falhar.
 
-9. **Publicar, só se a pessoa pedir.** O repositório é público: nada vai para
+10. **Publicar, só se a pessoa pedir.** O repositório é público: nada vai para
    o GitHub sem pedido explícito.
    - Branch `roadmap/<chave>`; commit do arquivo e do README, adicionados pelo
      nome; `gh pr create` seguindo o modelo de pull request do repositório.
@@ -171,7 +191,7 @@ organiza o estudo; ganho de aprendizagem é hipótese, não fato comprovado.
      merge, o app recebe o roadmap pela atualização automática do catálogo e
      um deploy.
 
-10. **Relatar**, em poucas linhas: onde o arquivo foi salvo; a espinha de
+11. **Relatar**, em poucas linhas: onde o arquivo foi salvo; a espinha de
     tópicos numa linha; quantos cartões, quantas fontes e quantas por tipo; as
     suposições; o que ficou de fora de propósito; o link do pull request, se
     houve.

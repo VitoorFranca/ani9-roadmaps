@@ -29,6 +29,14 @@ Antes de relatar, confira cada item. Se um item falhar, corrija o roadmap.
 - [ ] Nada foi copiado de outro roadmap (textos, listas de cartões, listas de
       fontes).
 
+## Objetivos e critérios
+
+- [ ] Todo passo tem objetivos que começam por um verbo observável.
+- [ ] Todo passo tem de 2 a 4 critérios que dá para verificar numa conversa
+      por escrito, e o `expect` de cada um traz pontos concretos.
+- [ ] Nenhum `expect` afirma algo que as fontes do passo não sustentam.
+- [ ] Toda escolha tem `choice: true`, e os ids são estáveis e únicos.
+
 ## Fontes
 
 - [ ] Todo cartão tem ao menos uma fonte própria, que trata dele (não a página
