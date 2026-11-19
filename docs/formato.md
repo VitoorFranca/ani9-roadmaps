@@ -1,11 +1,13 @@
-# Formato do modelo: `ani9-roadmap`, versão 2
+# Formato do modelo: `ani9-roadmap`, versões 2 e 3
 
 O modelo é um arquivo JSON em UTF-8, gravado em `models/<chave>.json`. O nome
 do arquivo, sem `.json`, é a chave do modelo e só pode ter a-z, 0-9 e hífen.
 
 O validador (`scripts/validate.mjs`) confere tudo o que está aqui, e o ANI-9
-valida de novo ao carregar os modelos. A versão 1 ainda é aceita, mas todo
-modelo novo ou revisado usa a versão 2.
+valida de novo ao carregar os modelos. Todo modelo novo ou revisado usa a
+**versão 3**, a do roadmap didático, descrita no fim desta página. Ela tem tudo
+o que a versão 2 tem, mais o que o tutor precisa. As versões 1 e 2 ainda são
+aceitas.
 
 ## Como o modelo vira um mapa
 
@@ -165,3 +167,91 @@ não um nicho. Escolha o que mais se aproxima; na dúvida, `"outros"`.
 A versão 1 não tem `format`, `marker` nem o terceiro nível, e só exige
 resumo e fontes nos tópicos. O app e o validador continuam aceitando, mas o
 validador avisa para migrar.
+
+## Versão 3: roadmap didático
+
+Na versão 3 o modelo não é copiado para um quadro. A pessoa **segue** o
+roadmap: cada tópico é uma **etapa**, cada cartão abaixo dele é um **passo**, e
+a etapa seguinte só abre quando os passos obrigatórios da atual terminam. Quem
+avalia se a pessoa aprendeu um passo é o tutor do ANI-9, com base nos critérios
+escritos aqui.
+
+```json
+{
+  "format": "ani9-roadmap",
+  "version": 3,
+  "revision": 1,
+  "title": "Back-end com Node.js",
+  "summary": "…",
+  "area": "tecnologia",
+  "level": "intermediario",
+  "topics": [
+    {
+      "id": "http",
+      "title": "HTTP",
+      "summary": "…",
+      "resources": ["…"],
+      "subtopics": [
+        {
+          "id": "metodos-http",
+          "title": "Métodos HTTP",
+          "summary": "…",
+          "objectives": ["Escolher o método certo para cada operação de uma API"],
+          "criteria": [
+            {
+              "id": "idempotencia",
+              "text": "Explica o que é um método idempotente e dá um exemplo",
+              "kind": "explicar",
+              "expect": "Repetir o pedido deixa o servidor no mesmo estado. PUT e DELETE são idempotentes; POST, não."
+            }
+          ],
+          "resources": ["…"]
+        },
+        {
+          "id": "escolha-um-banco",
+          "title": "Escolha um banco relacional",
+          "summary": "…",
+          "choice": true,
+          "objectives": ["…"],
+          "criteria": ["…"],
+          "resources": ["…"],
+          "subtopics": [
+            { "id": "postgresql", "title": "PostgreSQL", "marker": "recomendado", "…": "…" },
+            { "id": "mysql", "title": "MySQL", "marker": "alternativa", "…": "…" }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+| Campo | Obrigatório | Regra |
+|---|---|---|
+| `version` | sim | `3` |
+| `revision` | sim | inteiro a partir de 1; some 1 a cada mudança publicada do modelo |
+| *cartão*`.id` | sim | slug estável (a-z, 0-9, hífen), único no modelo. **Não mude o id de um cartão publicado**: o progresso das pessoas está preso a ele |
+| *passo*`.objectives` | sim | de 1 a 8 frases: o que a pessoa passa a conseguir fazer. Comece pelo verbo |
+| *passo*`.criteria` | sim | de 1 a 8 (ideal: 2 a 4): o que conta como prova |
+| `criteria[].id` | sim | slug único dentro do cartão |
+| `criteria[].text` | sim | o que a pessoa precisa mostrar, até 300 caracteres |
+| `criteria[].kind` | sim | `explicar`, `aplicar`, `comparar`, `depurar` ou `construir` |
+| `criteria[].expect` | sim | o que a resposta certa precisa trazer, até 600 caracteres. Só o tutor vê |
+| `criteria[].required` | não | `false` tira o critério da conta da aprovação |
+| *passo*`.requires` | não | ids de passos que precisam vir antes, da mesma etapa ou de uma anterior |
+| *passo*`.choice` | não | `true`: os subtópicos são opções, e provar uma basta |
+| `links` | não existe | use `requires` |
+
+*Passo* é todo cartão abaixo de um tópico. O tópico (a etapa) também tem `id`,
+e pode ter `objectives`; não tem `choice` nem `requires`, porque as etapas já
+vêm em ordem.
+
+Como o caminho anda:
+
+- um passo abre quando o cartão acima dele e os passos de `requires` foram
+  concluídos;
+- a etapa termina quando todos os passos obrigatórios terminam. Passo
+  `opcional` não trava, e numa escolha (`choice`) basta uma opção que não seja
+  opcional;
+- ao estudar, a pessoa vê o resumo, os objetivos e as fontes. Os critérios e o
+  `expect` ficam com o tutor.

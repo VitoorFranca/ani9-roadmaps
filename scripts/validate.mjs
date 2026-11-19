@@ -1,12 +1,13 @@
 #!/usr/bin/env node
-// Valida modelos de roadmap do ANI-9 (formato "ani9-roadmap", versões 1 e 2).
+// Valida modelos de roadmap do ANI-9 (formato "ani9-roadmap", versões 1, 2 e 3).
 //
 //   node scripts/validate.mjs [arquivo.json | pasta ...] [--check-links] [--titles]
 //
 // Sem argumentos, valida todos os arquivos de models/.
 // ERRO impede o app de carregar o modelo, ou quebra a promessa do roadmap
-// (na versão 2: todo cartão tem resumo e fontes; todo tópico, teoria e
-// prática). AVISO vale uma olhada.
+// (da versão 2 em diante: todo cartão tem resumo e fontes; todo tópico,
+// teoria e prática; na versão 3, o roadmap didático: id estável, objetivos e
+// critérios em todo passo). AVISO vale uma olhada.
 // Com --check-links, cada URL é aberta; link que não abre é erro.
 // Com --titles (implica --check-links), mostra o título real de cada página ao
 // lado do nome dado à fonte, para conferir se a fonte trata mesmo do cartão.
@@ -35,8 +36,11 @@ const AREAS = [
 const LEVELS = ["iniciante", "intermediario", "avancado", "completo"];
 const FORMATS = ["oficial", "codigo", "artigo", "curso", "video", "podcast", "livro", "exercicio"];
 const MARKERS = ["recomendado", "alternativa", "opcional"];
-const ROOT_KEYS = ["format", "version", "title", "summary", "area", "level", "topics", "links"];
-const NODE_KEYS = ["title", "summary", "marker", "resources", "subtopics"];
+const ROOT_KEYS = ["format", "version", "revision", "title", "summary", "area", "level", "topics", "links"];
+const NODE_KEYS = ["id", "title", "summary", "marker", "choice", "requires", "objectives", "criteria", "resources", "subtopics"];
+const CRITERION_KEYS = ["id", "text", "kind", "required", "expect"];
+const CRITERION_KINDS = ["explicar", "aplicar", "comparar", "depurar", "construir"];
+const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const RESOURCE_KEYS = ["kind", "format", "title", "url"];
 
 const args = process.argv.slice(2);
@@ -89,9 +93,14 @@ async function validate(path) {
   for (const extra of Object.keys(file).filter((k) => !ROOT_KEYS.includes(k))) warn("raiz", `campo desconhecido "${extra}"`);
 
   if (file.format !== "ani9-roadmap") err("raiz", 'format deve ser "ani9-roadmap"');
-  if (file.version !== 1 && file.version !== 2) err("raiz", "version deve ser 2 (ou 1, a antiga)");
+  if (![1, 2, 3].includes(file.version)) err("raiz", "version deve ser 3 (roadmap didático), 2 ou 1");
   if (file.version === 1) warn("raiz", "versão 1: migre para a 2 (resumo e fontes em todo cartão, formato das fontes)");
-  const v2 = file.version === 2;
+  // A versão 3 tem tudo o que a 2 tem.
+  const v2 = file.version === 2 || file.version === 3;
+  const v3 = file.version === 3;
+  if (v3 && (!Number.isInteger(file.revision) || file.revision < 1)) err("raiz", "revision deve ser um inteiro a partir de 1 (some 1 a cada mudança publicada)");
+  if (!v3 && file.revision !== undefined) err("raiz", "revision só existe na versão 3");
+  if (v3 && file.links !== undefined) err("raiz", "a versão 3 não tem links: use requires no cartão que depende");
   if (!text(file.title)) err("raiz", "title vazio");
   if (text(file.title).length > LIMITS.title) err("raiz", `title passa de ${LIMITS.title} caracteres`);
   if (file.area === undefined) err("raiz", `sem area (tema): use um de ${AREAS.join(", ")}`);
@@ -111,9 +120,70 @@ async function validate(path) {
   const titles = new Map(); // lowercased title → where
   const named = new Map(); // url → name given to the source (for --titles)
   let nodeCount = 0;
+  const ids = new Map(); // id → { where, topic }
+  const requirements = []; // { where, id, requires, topic }
+  let topicIndex = -1;
+
+  /** Version 3: what makes a card a step of a didactic roadmap. */
+  function checkStep(node, where, isTopic) {
+    for (const field of ["id", "choice", "requires", "objectives", "criteria"]) {
+      if (!v3 && node[field] !== undefined) err(where, `${field} só existe na versão 3`);
+    }
+    if (!v3) return;
+    if (typeof node.id !== "string" || !SLUG.test(node.id) || node.id.length > 80) err(where, "id ausente ou inválido: um slug estável (a-z, 0-9 e hífen)");
+    else if (ids.has(node.id)) err(where, `id "${node.id}" repetido (também em ${ids.get(node.id).where})`);
+    else ids.set(node.id, { where, topic: topicIndex });
+
+    const subs = Array.isArray(node.subtopics) ? node.subtopics : [];
+    if (node.choice !== undefined) {
+      if (typeof node.choice !== "boolean") err(where, "choice deve ser true ou false");
+      else if (node.choice && isTopic) err(where, "tópico (etapa) não é uma escolha: ponha choice no subtópico que agrupa as opções");
+      else if (node.choice && subs.filter((sub) => sub?.marker !== "opcional").length < 2) err(where, "choice pede ao menos duas opções");
+      else if (node.choice && !subs.some((sub) => sub?.marker === "recomendado")) warn(where, "escolha sem opção recomendada");
+    } else if (subs.some((sub) => sub?.marker === "recomendado" || sub?.marker === "alternativa")) {
+      warn(where, "subtópicos com recomendado/alternativa: falta choice: true neste cartão?");
+    }
+
+    if (node.requires !== undefined) {
+      if (isTopic) err(where, "tópico (etapa) não tem requires: as etapas já vêm em ordem");
+      else if (!Array.isArray(node.requires) || node.requires.some((id) => typeof id !== "string")) err(where, "requires é uma lista de ids");
+      else requirements.push({ where, id: node.id, requires: node.requires, topic: topicIndex });
+    }
+
+    const objectives = Array.isArray(node.objectives) ? node.objectives : [];
+    if (node.objectives !== undefined && !Array.isArray(node.objectives)) err(where, "objectives é uma lista de frases");
+    if (!isTopic && objectives.length === 0) err(where, "passo sem objectives: diga o que a pessoa passa a conseguir fazer");
+    if (objectives.length > 8) err(where, "mais de 8 objetivos");
+    for (const objective of objectives) {
+      if (!text(objective)) err(where, "objetivo vazio");
+      else if (text(objective).length > 300) err(where, "objetivo com mais de 300 caracteres");
+    }
+
+    const criteria = Array.isArray(node.criteria) ? node.criteria : [];
+    if (node.criteria !== undefined && !Array.isArray(node.criteria)) err(where, "criteria é uma lista");
+    if (!isTopic && criteria.length === 0) err(where, "passo sem criteria: diga o que conta como prova");
+    if (criteria.length > 8) err(where, "mais de 8 critérios");
+    else if (!isTopic && criteria.length === 1) warn(where, "só um critério: é pouco para avaliar o passo");
+    const seen = new Set();
+    for (const [i, criterion] of criteria.entries()) {
+      const at = `${where} › critério ${i + 1}`;
+      for (const extra of Object.keys(criterion ?? {}).filter((k) => !CRITERION_KEYS.includes(k))) warn(at, `campo desconhecido "${extra}"`);
+      if (typeof criterion?.id !== "string" || !SLUG.test(criterion.id)) err(at, "id ausente ou inválido (slug)");
+      else if (seen.has(criterion.id)) err(at, `id "${criterion.id}" repetido no cartão`);
+      else seen.add(criterion.id);
+      if (!text(criterion?.text)) err(at, "text vazio: o que a pessoa precisa mostrar");
+      else if (text(criterion.text).length > 300) err(at, "text com mais de 300 caracteres");
+      if (!CRITERION_KINDS.includes(criterion?.kind)) err(at, `kind deve ser um de: ${CRITERION_KINDS.join(", ")}`);
+      if (criterion?.required !== undefined && typeof criterion.required !== "boolean") err(at, "required deve ser true ou false");
+      if (!text(criterion?.expect)) err(at, "expect vazio: o que a resposta precisa trazer (só o tutor vê)");
+      else if (text(criterion.expect).length > 600) err(at, "expect com mais de 600 caracteres");
+    }
+    if (criteria.length > 0 && criteria.every((criterion) => criterion?.required === false)) err(where, "nenhum critério obrigatório");
+  }
 
   function checkNode(node, where, isTopic) {
     nodeCount++;
+    if (node && typeof node === "object") checkStep(node, where, isTopic);
     for (const extra of Object.keys(node ?? {}).filter((k) => !NODE_KEYS.includes(k))) {
       warn(where, `campo desconhecido "${extra}"`);
     }
@@ -204,8 +274,17 @@ async function validate(path) {
 
   for (const [i, topic] of topics.entries()) {
     const where = `tópico ${i + 1} "${text(topic?.title)}"`;
+    topicIndex = i;
     checkNode(topic, where, true);
     checkChildren(topic, where, 1);
+  }
+  for (const { where, id, requires, topic } of requirements) {
+    for (const required of requires) {
+      const target = ids.get(required);
+      if (!target) err(where, `requires "${required}": não é id de nenhum cartão`);
+      else if (required === id) err(where, "requer a si mesmo");
+      else if (target.topic > topic) err(where, `requires "${required}": o passo está numa etapa posterior`);
+    }
   }
   if (nodeCount > LIMITS.nodes) err("raiz", `mais de ${LIMITS.nodes} cartões`);
 
