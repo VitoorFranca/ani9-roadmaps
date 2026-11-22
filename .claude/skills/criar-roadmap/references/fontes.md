@@ -1,6 +1,6 @@
 # Como escolher fontes
 
-Cada cartão (tópico ou subtópico) tem as **suas** fontes: as que tratam daquele
+Cada cartão (o módulo ou um passo dele) tem as **suas** fontes: as que tratam daquele
 assunto, apontando para a seção, o capítulo ou a página certa. A fonte de um
 tópico não serve de fonte dos subtópicos dele.
 
@@ -34,7 +34,7 @@ de caso e questões de provas oficiais (`exercicio`).
 - **Ao menos 1 por cartão.** Tipicamente 2 a 4; até 8 quando há material bom
   de tipos diferentes (a doc oficial, um artigo que explica melhor, um vídeo,
   um exercício).
-- **Todo tópico:** ao menos uma de `teoria` e uma de `pratica`.
+- **O módulo:** ao menos uma de `teoria` e uma de `pratica`.
 - Mais fontes não é melhor: cada uma precisa ganhar o lugar.
 
 ## Regras
