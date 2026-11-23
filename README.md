@@ -1,16 +1,24 @@
 # Roadmaps do ANI-9
 
-Catálogo aberto de roadmaps de estudo: o caminho de um assunto em ordem de
-aprendizagem, desenhado como mapa: tópicos na espinha, subtópicos ao lado,
-escolhas marcadas (recomendado, alternativa, opcional) e, em **cada cartão**, um
-resumo de um parágrafo e fontes próprias de **teoria** e de **prática**, cada
-uma com o seu tipo (oficial, código, artigo, curso, vídeo, livro, exercício).
+Catálogo aberto de **sementes** de roadmaps de estudo. Uma semente diz aonde
+o roadmap vai (o **destino**, os **marcos** do caminho em ordem e o que ficou
+de fora) e traz o **primeiro módulo**: passos em ordem de estudo, cada um com
+um resumo de um parágrafo, o que a pessoa passa a conseguir fazer, os
+critérios pelos quais ela é avaliada e fontes próprias de **teoria** e de
+**prática**, cada uma com o seu tipo (oficial, código, artigo, curso, vídeo,
+livro, exercício).
 
-No [ANI-9](https://www.ani9.online), estes roadmaps aparecem em
-**Roadmaps → Roadmaps didáticos**. Quem clica em **Começar** segue o roadmap em
-etapas: a etapa seguinte abre quando a atual termina, e cada passo traz os
-objetivos e os critérios pelos quais o tutor do ANI-9 avalia. Os arquivos
-também servem fora do app: são JSON simples e legíveis.
+No [ANI-9](https://www.ani9.online), as sementes aparecem em
+**Roadmaps → Roadmaps didáticos**. Quem clica em **Começar** recebe o escopo e
+o primeiro módulo. Os módulos seguintes não vêm daqui: o tutor do ANI-9 cria
+cada um quando a pessoa termina o anterior, para ela, sempre na direção do
+próximo marco. Quando o último marco é alcançado, o roadmap acabou. No app
+também dá para criar um roadmap do zero com o assistente; o catálogo é para
+pontos de partida públicos. Os arquivos também servem fora do app: são JSON
+simples e legíveis.
+
+Até novembro de 2026 o catálogo guardava roadmaps inteiros. O conteúdo
+completo dos dois roadmaps abaixo continua no histórico do Git.
 
 ## Roadmaps
 
@@ -27,10 +35,10 @@ roadmaps são bem-vindas.
 ## Estrutura
 
 ```
-models/              um arquivo por roadmap (models/<chave>.json)
+models/              um arquivo por roadmap (models/<chave>.json): a semente
 docs/formato.md      o formato "ani9-roadmap", campo a campo
-scripts/validate.mjs validador: formato, limites, fontes em todo cartão, links e títulos
-CONTRIBUTING.md      como contribuir e o que é um bom roadmap
+scripts/validate.mjs validador: formato, escopo, limites, fontes em todo passo, links e títulos
+CONTRIBUTING.md      como contribuir e o que é uma boa semente
 .claude/skills/      skill criar-roadmap para o Claude Code
 ```
 
@@ -64,8 +72,9 @@ Com o [Claude Code](https://code.claude.com) aberto na raiz do repositório, rod
 /criar-roadmap <tema> [público/nível] [objetivo]
 ```
 
-A skill pesquisa o assunto, desenha o caminho, escreve os resumos, abre e
-confere cada fonte, grava `models/<chave>.json` e roda o validador. Ela só abre
+A skill pesquisa o assunto, propõe o escopo (destino e marcos) e espera o seu
+sim, escreve o primeiro módulo, abre e confere cada fonte, grava
+`models/<chave>.json` e roda o validador. Ela só abre
 um pull request se você pedir. O resultado segue as mesmas regras do
 [CONTRIBUTING.md](CONTRIBUTING.md) e passa pela mesma revisão de qualquer
 contribuição.

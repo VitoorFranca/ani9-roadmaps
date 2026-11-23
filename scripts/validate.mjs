@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Valida modelos de roadmap do ANI-9 (formato "ani9-roadmap", versões 1, 2 e 3).
+// Valida modelos de roadmap do ANI-9 (formato "ani9-roadmap", versões 1 a 4).
 //
 //   node scripts/validate.mjs [arquivo.json | pasta ...] [--check-links] [--titles]
 //
@@ -7,7 +7,8 @@
 // ERRO impede o app de carregar o modelo, ou quebra a promessa do roadmap
 // (da versão 2 em diante: todo cartão tem resumo e fontes; todo tópico,
 // teoria e prática; na versão 3, o roadmap didático: id estável, objetivos e
-// critérios em todo passo). AVISO vale uma olhada.
+// critérios em todo passo; na versão 4, a semente: o escopo, com destino e
+// marcos, e só o primeiro módulo). AVISO vale uma olhada.
 // Com --check-links, cada URL é aberta; link que não abre é erro.
 // Com --titles (implica --check-links), mostra o título real de cada página ao
 // lado do nome dado à fonte, para conferir se a fonte trata mesmo do cartão.
@@ -36,7 +37,9 @@ const AREAS = [
 const LEVELS = ["iniciante", "intermediario", "avancado", "completo"];
 const FORMATS = ["oficial", "codigo", "artigo", "curso", "video", "podcast", "livro", "exercicio"];
 const MARKERS = ["recomendado", "alternativa", "opcional"];
-const ROOT_KEYS = ["format", "version", "revision", "title", "summary", "area", "level", "topics", "links"];
+const ROOT_KEYS = ["format", "version", "revision", "title", "summary", "area", "level", "topics", "links", "scope", "module"];
+const SCOPE_KEYS = ["destination", "milestones", "out"];
+const MILESTONES = { min: 2, max: 60 };
 const NODE_KEYS = ["id", "title", "summary", "marker", "choice", "requires", "objectives", "criteria", "resources", "subtopics"];
 const CRITERION_KEYS = ["id", "text", "kind", "required", "expect"];
 const CRITERION_KINDS = ["explicar", "aplicar", "comparar", "depurar", "construir"];
@@ -93,14 +96,19 @@ async function validate(path) {
   for (const extra of Object.keys(file).filter((k) => !ROOT_KEYS.includes(k))) warn("raiz", `campo desconhecido "${extra}"`);
 
   if (file.format !== "ani9-roadmap") err("raiz", 'format deve ser "ani9-roadmap"');
-  if (![1, 2, 3].includes(file.version)) err("raiz", "version deve ser 3 (roadmap didático), 2 ou 1");
+  if (![1, 2, 3, 4].includes(file.version)) err("raiz", "version deve ser 4 (semente de roadmap didático), 3, 2 ou 1");
   if (file.version === 1) warn("raiz", "versão 1: migre para a 2 (resumo e fontes em todo cartão, formato das fontes)");
-  // A versão 3 tem tudo o que a 2 tem.
-  const v2 = file.version === 2 || file.version === 3;
-  const v3 = file.version === 3;
+  if (file.version === 3) warn("raiz", "versão 3 (roadmap inteiro): o app usa só o primeiro tópico e toma os demais como marcos; publique como semente (versão 4)");
+  // Cada versão tem tudo o que a anterior tem. A 4 é uma semente: o escopo e um só módulo,
+  // escrito como um tópico da versão 3.
+  const v4 = file.version === 4;
+  const v3 = file.version === 3 || v4;
+  const v2 = file.version === 2 || v3;
   if (v3 && (!Number.isInteger(file.revision) || file.revision < 1)) err("raiz", "revision deve ser um inteiro a partir de 1 (some 1 a cada mudança publicada)");
-  if (!v3 && file.revision !== undefined) err("raiz", "revision só existe na versão 3");
-  if (v3 && file.links !== undefined) err("raiz", "a versão 3 não tem links: use requires no cartão que depende");
+  if (!v3 && file.revision !== undefined) err("raiz", "revision só existe a partir da versão 3");
+  if (v3 && file.links !== undefined) err("raiz", "a partir da versão 3 não há links: use requires no cartão que depende");
+  if (v4 && file.topics !== undefined) err("raiz", "a versão 4 não tem topics: tem scope (aonde o roadmap vai) e module (o primeiro módulo)");
+  if (!v4 && (file.scope !== undefined || file.module !== undefined)) err("raiz", "scope e module só existem na versão 4");
   if (!text(file.title)) err("raiz", "title vazio");
   if (text(file.title).length > LIMITS.title) err("raiz", `title passa de ${LIMITS.title} caracteres`);
   if (file.area === undefined) err("raiz", `sem area (tema): use um de ${AREAS.join(", ")}`);
@@ -109,12 +117,42 @@ async function validate(path) {
   else if (!LEVELS.includes(file.level)) err("raiz", `level "${file.level}" desconhecido: use um de ${LEVELS.join(", ")}`);
   if (!text(file.summary)) warn("raiz", "sem summary do roadmap (para quem é e aonde leva)");
   if (text(file.summary).length > LIMITS.summary) err("raiz", `summary passa de ${LIMITS.summary} caracteres`);
-  if (!Array.isArray(file.topics) || file.topics.length === 0) err("raiz", "topics vazio");
+  if (!v4 && (!Array.isArray(file.topics) || file.topics.length === 0)) err("raiz", "topics vazio");
+  if (v4 && (!file.module || typeof file.module !== "object" || Array.isArray(file.module))) err("raiz", "sem module: o primeiro módulo do roadmap");
 
-  const topics = Array.isArray(file.topics) ? file.topics : [];
+  // Na versão 4 o único "tópico" é o primeiro módulo.
+  const topics = v4 ? (file.module && typeof file.module === "object" && !Array.isArray(file.module) ? [file.module] : []) : Array.isArray(file.topics) ? file.topics : [];
   if (topics.length > LIMITS.topics) err("raiz", `mais de ${LIMITS.topics} tópicos`);
-  if (topics.length > 0 && topics.length < 5) warn("raiz", `só ${topics.length} tópicos: está completo?`);
+  if (!v4 && topics.length > 0 && topics.length < 5) warn("raiz", `só ${topics.length} tópicos: está completo?`);
   if (topics.length > 40) warn("raiz", `${topics.length} tópicos: dá para agrupar parte deles como subtópicos?`);
+
+  // Versão 4: o escopo é o que faz o roadmap ter fim. O primeiro módulo alcança o primeiro
+  // marco (ou os primeiros, em ordem); os módulos seguintes o tutor cria, um por vez.
+  if (v4) {
+    const scope = file.scope && typeof file.scope === "object" && !Array.isArray(file.scope) ? file.scope : null;
+    if (!scope) err("raiz", "sem scope: o destino e os marcos do roadmap");
+    for (const extra of Object.keys(scope ?? {}).filter((k) => !SCOPE_KEYS.includes(k))) warn("scope", `campo desconhecido "${extra}"`);
+    if (!text(scope?.destination)) err("scope", "destination vazio: o que a pessoa vai conseguir fazer quando o roadmap acabar");
+    else if (text(scope.destination).length > 400) err("scope", "destination com mais de 400 caracteres");
+    const milestones = Array.isArray(scope?.milestones) ? scope.milestones : [];
+    if (milestones.length < MILESTONES.min || milestones.length > MILESTONES.max) err("scope", `milestones: de ${MILESTONES.min} a ${MILESTONES.max} marcos (tem ${milestones.length})`);
+    const milestoneIds = [];
+    for (const [i, milestone] of milestones.entries()) {
+      const at = `scope › marco ${i + 1} "${text(milestone?.title)}"`;
+      if (typeof milestone?.id !== "string" || !SLUG.test(milestone.id) || milestone.id.length > 80) err(at, "id ausente ou inválido (slug)");
+      else if (milestoneIds.includes(milestone.id)) err(at, `id "${milestone.id}" repetido`);
+      if (!text(milestone?.title)) err(at, "title vazio");
+      else if (text(milestone.title).length > LIMITS.title) err(at, `title passa de ${LIMITS.title} caracteres`);
+      milestoneIds.push(milestone?.id);
+    }
+    if (scope?.out !== undefined) {
+      if (!Array.isArray(scope.out) || scope.out.some((item) => !text(item))) err("scope", "out é uma lista de frases: o que ficou de fora de propósito");
+      else if (scope.out.length > 12) err("scope", "out com mais de 12 itens");
+    }
+    const closes = file.module?.closes;
+    if (!Array.isArray(closes) || closes.length === 0) err("module", "sem closes: os marcos que o primeiro módulo alcança");
+    else if (closes.some((id, i) => milestoneIds[i] !== id)) err("module", "closes deve ser o primeiro marco do escopo (ou os primeiros, na ordem)");
+  }
 
   const urls = new Map(); // url → where
   const titles = new Map(); // lowercased title → where
@@ -184,7 +222,7 @@ async function validate(path) {
   function checkNode(node, where, isTopic) {
     nodeCount++;
     if (node && typeof node === "object") checkStep(node, where, isTopic);
-    for (const extra of Object.keys(node ?? {}).filter((k) => !NODE_KEYS.includes(k))) {
+    for (const extra of Object.keys(node ?? {}).filter((k) => !NODE_KEYS.includes(k) && !(v4 && isTopic && k === "closes"))) {
       warn(where, `campo desconhecido "${extra}"`);
     }
     const title = text(node?.title);
@@ -273,7 +311,7 @@ async function validate(path) {
   }
 
   for (const [i, topic] of topics.entries()) {
-    const where = `tópico ${i + 1} "${text(topic?.title)}"`;
+    const where = v4 ? `módulo "${text(topic?.title)}"` : `tópico ${i + 1} "${text(topic?.title)}"`;
     topicIndex = i;
     checkNode(topic, where, true);
     checkChildren(topic, where, 1);
@@ -319,7 +357,9 @@ async function validate(path) {
   }
 
   console.log(
-    `${topics.length} tópicos, ${nodeCount} cartões, ${urls.size} fontes${checkLinks ? " (links verificados)" : ""}.`,
+    v4
+      ? `semente: ${Array.isArray(file.scope?.milestones) ? file.scope.milestones.length : 0} marcos, primeiro módulo com ${nodeCount - 1} passos, ${urls.size} fontes${checkLinks ? " (links verificados)" : ""}.`
+      : `${topics.length} tópicos, ${nodeCount} cartões, ${urls.size} fontes${checkLinks ? " (links verificados)" : ""}.`,
   );
   for (const message of errors) console.log(`ERRO   ${message}`);
   for (const message of warnings) console.log(`AVISO  ${message}`);
